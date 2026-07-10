@@ -178,7 +178,7 @@ function FAQItem({ item, isOpen, onToggle }: { item: (typeof faqs)[0]; isOpen: b
 export default function LandingPage() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(0);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [preSelectedRole, setPreSelectedRole] = useState<'patient' | 'therapist' | null>(null);
+  const [preSelectedRole, setPreSelectedRole] = useState<'patient' | 'therapist' | 'org_admin' | null>(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -192,11 +192,17 @@ export default function LandingPage() {
             <span className="font-bold text-lg text-gray-900">You Matter</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-3">
             <Link href="/patient/find-therapist">
               <Button variant="secondary" className="rounded-lg text-sm">
                 Find Therapist
               </Button>
+            </Link>
+            <Link
+              href="/login"
+              className="text-gray-700 hover:text-gray-900 text-sm font-semibold px-3 py-2 transition-colors"
+            >
+              Login
             </Link>
             <button
               onClick={() => {
@@ -215,6 +221,15 @@ export default function LandingPage() {
               className="border border-green-600 text-green-700 hover:bg-green-50 rounded-lg text-sm px-5 py-2 font-semibold transition-colors"
             >
               I'm a Professional
+            </button>
+            <button
+              onClick={() => {
+                setPreSelectedRole('org_admin');
+                setAuthModalOpen(true);
+              }}
+              className="border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm px-5 py-2 font-semibold transition-colors"
+            >
+              For Organizations
             </button>
           </div>
         </div>

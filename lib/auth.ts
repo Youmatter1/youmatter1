@@ -14,7 +14,7 @@ const JWT_EXPIRES_IN = '7d';
 export interface TokenPayload {
   userId: number;
   email: string;
-  role: 'patient' | 'therapist' | 'admin';
+  role: 'patient' | 'therapist' | 'admin' | 'org_admin';
   subscription_status?: string;
   is_verified?: number;
 }
@@ -75,7 +75,7 @@ export async function authenticateUser(email: string, password: string) {
       return { success: false, message: 'Invalid email or password' };
     }
 
-    const role = (user.role === 'patient' || user.role === 'therapist' || user.role === 'admin')
+    const role = (user.role === 'patient' || user.role === 'therapist' || user.role === 'admin' || user.role === 'org_admin')
       ? user.role
       : 'patient';
 

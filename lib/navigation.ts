@@ -69,6 +69,29 @@ export const therapistNav: NavItem[] = [
   },
 ];
 
+export const orgAdminNav: NavItem[] = [
+  {
+    label: "Dashboard",
+    href: "/organization",
+    icon: "dashboard",
+  },
+  {
+    label: "Members",
+    href: "/organization/members",
+    icon: "team",
+  },
+  {
+    label: "Analytics",
+    href: "/organization/analytics",
+    icon: "chart",
+  },
+  {
+    label: "Settings",
+    href: "/organization/settings",
+    icon: "institution",
+  },
+];
+
 export const patientNav: NavItem[] = [
   {
     label: "Dashboard",

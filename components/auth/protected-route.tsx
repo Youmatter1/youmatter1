@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth-context';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: Array<'patient' | 'therapist' | 'admin'>;
+  allowedRoles: Array<'patient' | 'therapist' | 'admin' | 'org_admin'>;
 }
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
@@ -24,6 +24,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
           'admin': '/admin',
           'therapist': '/clinician',
           'patient': '/patient',
+          'org_admin': '/organization',
         };
         router.push(redirectMap[user.role] || '/login');
       }

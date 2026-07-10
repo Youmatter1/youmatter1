@@ -10,7 +10,7 @@ import { AuthModal } from "@/components/auth/auth-modal";
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [preSelectedRole, setPreSelectedRole] = useState<'patient' | 'therapist' | null>(null);
+  const [preSelectedRole, setPreSelectedRole] = useState<'patient' | 'therapist' | 'org_admin' | null>(null);
 
   return (
     <header className="sticky top-6 z-50 flex justify-center px-4 sm:px-6">
@@ -72,6 +72,15 @@ export function Navbar() {
             className={buttonVariants({ variant: "secondary" })}
           >
             Get Started
+          </button>
+          <button
+            onClick={() => {
+              setPreSelectedRole('org_admin');
+              setAuthModalOpen(true);
+            }}
+            className="rounded-full px-5 py-2 text-sm font-semibold text-black/70 border border-black/20 transition hover:text-black hover:bg-black/5"
+          >
+            For Organizations
           </button>
         </div>
 
@@ -137,6 +146,16 @@ export function Navbar() {
                 className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors text-left w-full"
               >
                 Get Started
+              </button>
+              <button
+                onClick={() => {
+                  setPreSelectedRole('org_admin');
+                  setAuthModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors text-left w-full"
+              >
+                For Organizations
               </button>
             </nav>
           </div>

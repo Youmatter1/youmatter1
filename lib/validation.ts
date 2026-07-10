@@ -86,9 +86,21 @@ export const registerTherapistSchema = z.object({
   documents: z.array(z.string()).optional(),
 });
 
+export const registerOrgAdminSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+  role: z.literal('org_admin'),
+  organization_name: z.string()
+    .min(2, 'Organization name must be at least 2 characters')
+    .max(200, 'Organization name must not exceed 200 characters')
+    .trim(),
+  domain: z.string().max(255, 'Domain must not exceed 255 characters').trim().optional(),
+});
+
 export const registerSchema = z.discriminatedUnion('role', [
   registerPatientSchema,
   registerTherapistSchema,
+  registerOrgAdminSchema,
 ]);
 
 export const forgotPasswordSchema = z.object({
@@ -173,6 +185,21 @@ export const updateLessonSchema = z.object({
   patient_feedback: z.string().max(500, 'Patient feedback must not exceed 500 characters').optional(),
   therapist_feedback: z.string().max(500, 'Therapist feedback must not exceed 500 characters').optional(),
   rating: z.number().int().min(1).max(5).optional(),
+});
+
+// ==========================================
+// Organization (B2B) Schemas
+// ==========================================
+
+export const inviteOrganizationMemberSchema = z.object({
+  email: emailSchema,
+});
+
+export const updateOrganizationSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(200, 'Name must not exceed 200 characters').trim().optional(),
+  domain: z.string().max(255, 'Domain must not exceed 255 characters').trim().optional(),
+  logo_url: urlSchema,
+  billing_email: z.string().email('Invalid billing email').optional().or(z.literal('')),
 });
 
 // ==========================================

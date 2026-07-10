@@ -1,14 +1,24 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { AuthShell } from '@/components/layout/auth-shell';
+import { LoginForm } from '@/components/auth/login-form';
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/");
-  }, [router]);
-
-  return null;
+  return (
+    <AuthShell
+      title="Welcome back"
+      subtitle="Sign in to your account"
+      footer={
+        <span>
+          Don&apos;t have an account?{' '}
+          <Link href="/signup" className="font-semibold text-black hover:text-gray-700 transition">
+            Sign up
+          </Link>
+        </span>
+      }
+    >
+      <LoginForm />
+    </AuthShell>
+  );
 }

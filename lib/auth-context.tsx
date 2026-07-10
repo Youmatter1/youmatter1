@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 interface User {
   id: number;
   email: string;
-  role: 'patient' | 'therapist' | 'admin';
+  role: 'patient' | 'therapist' | 'admin' | 'org_admin';
   isVerified: boolean;
   profile?: any;
 }
@@ -112,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'admin': '/admin',
         'therapist': '/clinician',
         'patient': '/patient',
+        'org_admin': '/organization',
       };
 
       // Check for redirect param in URL

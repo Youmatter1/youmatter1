@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hashPassword, generateToken } from '@/lib/auth';
-import { userQueries, patientQueries, therapistQueries } from '@/lib/db';
+import { userQueries, patientQueries, therapistQueries, organizationQueries } from '@/lib/db';
 import db from '@/lib/db';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import { validateRequest, registerSchema } from '@/lib/validation';
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       email,
       passwordHash,
       role,
-      role === 'patient' ? 1 : 0, // auto-verify patients
+      (role === 'patient' || role === 'org_admin') ? 1 : 0, // auto-verify patients and org admins (no manual review needed)
       1 // is_active
     );
 
@@ -161,19 +161,30 @@ export async function POST(request: Request) {
           });
         }
       }
+    } else if (role === 'org_admin') {
+      const { organization_name, domain } = body;
+      const orgResult = await organizationQueries.createOrganization(organization_name, domain || null, email);
+      let organizationId = orgResult.lastInsertRowid ? Number(orgResult.lastInsertRowid) : 0;
+
+      if (!organizationId) {
+        throw new Error('Failed to retrieve created organization');
+      }
+
+      await organizationQueries.createOwnerMembership(organizationId, userId);
     }
 
     // generating token for all users
+    const isAutoVerified = role === 'patient' || role === 'org_admin';
     const token = generateToken({
       userId,
       email,
       role,
-      is_verified: role === 'patient' ? 1 : 0,
+      is_verified: isAutoVerified ? 1 : 0,
     });
 
     const response = NextResponse.json({
       success: true,
-      message: role === 'patient'
+      message: isAutoVerified
         ? 'Account created successfully'
         : 'Account created. Pending verification.',
       token,
@@ -181,7 +192,7 @@ export async function POST(request: Request) {
         id: userId,
         email,
         role,
-        isVerified: role === 'patient' ? 1 : 0,
+        isVerified: isAutoVerified ? 1 : 0,
       },
     }, { status: 201 });
 

@@ -7,10 +7,11 @@ const protectedRoutes = {
   '/admin': ['admin'],
   '/patient': ['patient'],
   '/clinician': ['therapist'],
+  '/organization': ['org_admin'],
 };
 
 // routes with authentication
-const authRequiredRoutes = ['/admin', '/patient', '/clinician'];
+const authRequiredRoutes = ['/admin', '/patient', '/clinician', '/organization'];
 
 // routes with no authentication
 const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/education', '/testimonials', '/api-docs', '/api', '/donate', '/patient/find-therapist', '/patient/clinician', '/patient/book-session'];
@@ -95,6 +96,7 @@ export async function middleware(request: NextRequest) {
             'admin': '/admin',
             'patient': '/patient',
             'therapist': '/clinician',
+            'org_admin': '/organization',
           };
           const redirectPath = roleRedirectMap[userRole] || '/login';
           return NextResponse.redirect(new URL(redirectPath, request.url));

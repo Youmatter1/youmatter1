@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Check, X, CheckCircle, Circle } from 'lucide-react';
 
-type UserRole = 'patient' | 'therapist';
+type UserRole = 'patient' | 'therapist' | 'org_admin';
 
 interface RoleOption {
   value: UserRole;
@@ -25,6 +25,11 @@ const roles: RoleOption[] = [
     value: 'therapist',
     label: 'Licensed Therapist',
     description: 'Provide therapy services and manage your practice',
+  },
+  {
+    value: 'org_admin',
+    label: 'Register Organization',
+    description: 'Give your employees access to therapy and manage your team\'s account',
   },
 ];
 
@@ -64,6 +69,9 @@ export function SignupForm({ preSelectedRole }: SignupFormProps = {}) {
     mission: '',
     // therapist documents
     documents: [] as File[],
+    // organization fields
+    organization_name: '',
+    domain: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -223,6 +231,9 @@ export function SignupForm({ preSelectedRole }: SignupFormProps = {}) {
         }
 
         payload.documents = uploadedUrls;
+      } else if (selectedRole === 'org_admin') {
+        payload.organization_name = formData.organization_name;
+        if (formData.domain) payload.domain = formData.domain;
       }
 
       const response = await fetch('/api/auth/register', {
@@ -270,6 +281,7 @@ export function SignupForm({ preSelectedRole }: SignupFormProps = {}) {
         const redirectMap = {
           'patient': '/patient',
           'therapist': '/clinician/pending',
+          'org_admin': '/organization',
         };
 
         window.location.href = redirectMap[selectedRole];
@@ -666,6 +678,41 @@ export function SignupForm({ preSelectedRole }: SignupFormProps = {}) {
                   </div>
                 ))}
               </div>
+            </div>
+          </>
+        )}
+
+        {/* organization fields */}
+        {selectedRole === 'org_admin' && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="organization_name" requiredIndicator>Organization Name</Label>
+              <Input
+                id="organization_name"
+                name="organization_name"
+                value={formData.organization_name}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                placeholder="Acme Inc"
+                className="border-gray-300 focus:border-gray-800 focus:ring-gray-300"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="domain">Company Domain</Label>
+              <Input
+                id="domain"
+                name="domain"
+                value={formData.domain}
+                onChange={handleChange}
+                disabled={isLoading}
+                placeholder="acme.com"
+                className="border-gray-300 focus:border-gray-800 focus:ring-gray-300"
+              />
+              <p className="text-xs text-gray-500">Optional — helps us match employees who sign up with a company email.</p>
+            </div>
+            <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-xs text-gray-600">
+              This email will be the organization's first admin. You'll be able to invite your team and manage seats from your dashboard right after signing up.
             </div>
           </>
         )}

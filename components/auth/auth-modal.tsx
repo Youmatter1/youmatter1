@@ -9,7 +9,7 @@ interface AuthModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialMode?: "login" | "signup";
-  preSelectedRole?: 'patient' | 'therapist' | null;
+  preSelectedRole?: 'patient' | 'therapist' | 'org_admin' | null;
 }
 
 export function AuthModal({ open, onOpenChange, initialMode = "login", preSelectedRole }: AuthModalProps) {
