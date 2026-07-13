@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getUserFromRequest, assertSameOrg } from '@/lib/auth';
 import db from '@/lib/db';
 
 function generateSlots(startTime: string, endTime: string): string[] {
@@ -28,13 +29,20 @@ export async function GET(
 
     // Verify therapist exists and is verified
     const therapistRes = await db.execute({
-      sql: 'SELECT id, is_verified FROM therapists WHERE id = ?',
+      sql: `SELECT t.id, t.is_verified, u.organization_id
+            FROM therapists t JOIN users u ON t.user_id = u.id
+            WHERE t.id = ?`,
       args: [therapistId],
     });
-    const therapist = therapistRes.rows[0] as unknown as { id: number; is_verified: number } | undefined;
+    const therapist = therapistRes.rows[0] as unknown as { id: number; is_verified: number; organization_id: number | null } | undefined;
 
     if (!therapist) {
       return NextResponse.json({ error: 'Therapist not found' }, { status: 404 });
+    }
+
+    const currentUser = getUserFromRequest(request);
+    if (!assertSameOrg(currentUser?.organization_id ?? null, therapist.organization_id ?? null)) {
+      return NextResponse.json({ error: 'You do not have access to this therapist' }, { status: 403 });
     }
 
     // Get therapist's weekly schedule

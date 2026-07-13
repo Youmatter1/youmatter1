@@ -1,46 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronDown, Heart, Users, Zap, Quote, CheckCircle, MessageCircle, Lock, Phone, Mail, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AuthModal } from '@/components/auth/auth-modal';
 
-const therapists = [
-  {
-    id: 1,
-    name: 'Dr. Amara Okonkwo',
-    title: 'Clinical Psychologist',
-    specialty: 'Anxiety & Depression',
-    rating: 4.9,
-    reviews: 128,
-    price: 80,
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-    badge: 'Verified',
-  },
-  {
-    id: 2,
-    name: 'Dr. Kwame Mensah',
-    title: 'Licensed Therapist',
-    specialty: 'Relationships & Trauma',
-    rating: 4.8,
-    reviews: 95,
-    price: 75,
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    badge: 'Verified',
-  },
-  {
-    id: 3,
-    name: 'Zainab Hassan',
-    title: 'Counselor',
-    specialty: 'Life Transitions',
-    rating: 4.9,
-    reviews: 156,
-    price: 70,
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
-    badge: 'Verified',
-  },
-];
+interface FeaturedTherapist {
+  id: number;
+  full_name: string;
+  specialization: string;
+  years_of_experience: number;
+  profile_picture: string | null;
+  average_rating: number;
+  total_reviews: number;
+  consultation_fee: number;
+  is_verified: boolean;
+}
 
 const testimonials = [
   {
@@ -102,35 +78,69 @@ function StepCard({ number, title, description }: { number: number; title: strin
   );
 }
 
-function TherapistCard({ therapist, onAuthRequired }: { therapist: (typeof therapists)[0]; onAuthRequired: () => void }) {
+function TherapistCard({ therapist }: { therapist: FeaturedTherapist }) {
+  const initials = therapist.full_name
+    .split(' ')
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
   return (
     <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
-      <div className="relative h-48 bg-gradient-to-br from-green-100 to-blue-50 overflow-hidden">
-        <img src={therapist.image} alt={therapist.name} className="w-full h-full object-cover" />
-        <div className="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
-          {therapist.badge}
-        </div>
+      <div className="relative h-48 bg-gradient-to-br from-green-100 to-blue-50 overflow-hidden flex items-center justify-center">
+        {therapist.profile_picture ? (
+          <img src={therapist.profile_picture} alt={therapist.full_name} className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-4xl font-bold text-green-700">{initials}</span>
+        )}
+        {therapist.is_verified ? (
+          <div className="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+            Verified
+          </div>
+        ) : null}
       </div>
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">{therapist.name}</h3>
-        <p className="text-sm text-green-700 font-medium mb-3">{therapist.title}</p>
-        <p className="text-xs text-gray-600 mb-4">{therapist.specialty}</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">{therapist.full_name}</h3>
+        <p className="text-sm text-green-700 font-medium mb-3">{therapist.specialization}</p>
+        {therapist.years_of_experience > 0 ? (
+          <p className="text-xs text-gray-600 mb-4">
+            {therapist.years_of_experience} year{therapist.years_of_experience === 1 ? '' : 's'} of experience
+          </p>
+        ) : null}
 
         <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-semibold text-gray-900">{therapist.rating}</span>
-            <span className="text-lg">⭐</span>
-            <span className="text-xs text-gray-600">({therapist.reviews})</span>
-          </div>
-          <div className="text-lg font-bold text-green-700">${therapist.price}</div>
+          {therapist.total_reviews > 0 ? (
+            <div className="flex items-center gap-1">
+              <span className="text-sm font-semibold text-gray-900">{therapist.average_rating.toFixed(1)}</span>
+              <span className="text-lg">⭐</span>
+              <span className="text-xs text-gray-600">({therapist.total_reviews})</span>
+            </div>
+          ) : (
+            <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full">New</span>
+          )}
+          <div className="text-lg font-bold text-green-700">${therapist.consultation_fee}</div>
         </div>
 
-        <Button
-          onClick={onAuthRequired}
-          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold h-10"
-        >
-          Book a Session
-        </Button>
+        <Link href={`/patient/clinician/${therapist.id}`}>
+          <Button className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold h-10">
+            View Profile
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function TherapistCardSkeleton() {
+  return (
+    <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden animate-pulse">
+      <div className="h-48 bg-gray-100" />
+      <div className="p-6 space-y-3">
+        <div className="h-4 bg-gray-100 rounded w-3/4" />
+        <div className="h-3 bg-gray-100 rounded w-1/2" />
+        <div className="h-10 bg-gray-100 rounded-xl mt-4" />
       </div>
     </div>
   );
@@ -179,6 +189,18 @@ export default function LandingPage() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(0);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [preSelectedRole, setPreSelectedRole] = useState<'patient' | 'therapist' | 'org_admin' | null>(null);
+  const [therapists, setTherapists] = useState<FeaturedTherapist[]>([]);
+  const [therapistsLoading, setTherapistsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/patient/therapists?limit=3')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setTherapists(data.data);
+      })
+      .catch(() => {})
+      .finally(() => setTherapistsLoading(false));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -202,34 +224,16 @@ export default function LandingPage() {
               href="/login"
               className="text-gray-700 hover:text-gray-900 text-sm font-semibold px-3 py-2 transition-colors"
             >
-              Login
+              Log In
             </Link>
             <button
               onClick={() => {
-                setPreSelectedRole('patient');
+                setPreSelectedRole(null);
                 setAuthModalOpen(true);
               }}
               className="bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm px-5 py-2 font-semibold transition-colors"
             >
-              Get Started
-            </button>
-            <button
-              onClick={() => {
-                setPreSelectedRole('therapist');
-                setAuthModalOpen(true);
-              }}
-              className="border border-green-600 text-green-700 hover:bg-green-50 rounded-lg text-sm px-5 py-2 font-semibold transition-colors"
-            >
-              I'm a Professional
-            </button>
-            <button
-              onClick={() => {
-                setPreSelectedRole('org_admin');
-                setAuthModalOpen(true);
-              }}
-              className="border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm px-5 py-2 font-semibold transition-colors"
-            >
-              For Organizations
+              Sign Up
             </button>
           </div>
         </div>
@@ -325,18 +329,23 @@ export default function LandingPage() {
             <p className="text-lg text-gray-600">Highly-rated professionals ready to support you</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {therapists.map((therapist) => (
-              <TherapistCard
-                key={therapist.id}
-                therapist={therapist}
-                onAuthRequired={() => {
-                  setPreSelectedRole('patient');
-                  setAuthModalOpen(true);
-                }}
-              />
-            ))}
-          </div>
+          {therapistsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[0, 1, 2].map((i) => (
+                <TherapistCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : therapists.length === 0 ? (
+            <div className="rounded-2xl border border-gray-200 bg-gray-50 py-16 text-center">
+              <p className="text-gray-600">New therapists are joining every week — check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {therapists.map((therapist) => (
+                <TherapistCard key={therapist.id} therapist={therapist} />
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link href="/patient/find-therapist">
@@ -553,6 +562,7 @@ export default function LandingPage() {
       <AuthModal
         open={authModalOpen}
         onOpenChange={setAuthModalOpen}
+        initialMode="signup"
         preSelectedRole={preSelectedRole}
       />
     </div>

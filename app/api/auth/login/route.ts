@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, password } = validation.data;
+    const { email, password, role } = validation.data;
 
     // authenticate user
     const result = await authenticateUser(email, password);
@@ -49,6 +49,23 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: result.message },
         { status: 401 }
+      );
+    }
+
+    // If the sign-in screen's account-type picker was used, enforce it as a real
+    // boundary: this account must actually be that type, not just any valid login.
+    if (role && result.user!.role !== role) {
+      const roleLabels: Record<string, string> = {
+        patient: 'Patient / Client',
+        therapist: 'Licensed Therapist',
+        org_admin: 'Organization',
+        admin: 'Administrator',
+      };
+      const actualLabel = roleLabels[result.user!.role] || result.user!.role;
+      const selectedLabel = roleLabels[role] || role;
+      return NextResponse.json(
+        { error: `This account is registered as ${actualLabel}, not ${selectedLabel}. Go back and choose the correct account type to sign in.` },
+        { status: 403 }
       );
     }
 

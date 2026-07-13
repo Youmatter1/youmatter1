@@ -90,6 +90,11 @@ export const orgAdminNav: NavItem[] = [
     href: "/organization/settings",
     icon: "institution",
   },
+  {
+    label: "Billing",
+    href: "/organization/billing",
+    icon: "billing",
+  },
 ];
 
 export const patientNav: NavItem[] = [

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, Filter, X, Star, Clock, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/lib/auth-context';
 
 interface Therapist {
   id: number;
@@ -94,6 +95,7 @@ function TherapistCard({ therapist }: { therapist: Therapist }) {
 }
 
 export default function FindTherapistPage() {
+  const { user, token } = useAuth();
   const [therapists, setTherapists] = useState<Therapist[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -103,11 +105,25 @@ export default function FindTherapistPage() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [minRating, setMinRating] = useState(0);
+  const [organizationName, setOrganizationName] = useState<string | null>(null);
+
+  const isOrgBound = Boolean(user?.organization_id);
 
   // Fetch therapists from database
   useEffect(() => {
     fetchTherapists();
   }, []);
+
+  useEffect(() => {
+    if (!user?.organization_id || !token) {
+      setOrganizationName(null);
+      return;
+    }
+    fetch('/api/organization/context', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => setOrganizationName(data.organization?.name || null))
+      .catch(() => setOrganizationName(null));
+  }, [user?.organization_id, token]);
 
   const fetchTherapists = async () => {
     try {
@@ -156,7 +172,9 @@ export default function FindTherapistPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900">Find Your Therapist</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {isOrgBound && organizationName ? `Your ${organizationName} Therapists` : 'Find Your Therapist'}
+              </h1>
               <p className="text-gray-600 mt-1">Connect with licensed professionals ready to support you</p>
             </div>
           </div>
@@ -195,30 +213,32 @@ export default function FindTherapistPage() {
             <div className="rounded-xl bg-white border border-gray-200 p-6 sticky top-28 space-y-6">
               <h2 className="font-bold text-gray-900">Filters</h2>
 
-              {/* Price Range */}
-              <div>
-                <label className="text-sm font-semibold text-gray-900 block mb-3">
-                  Price Range: ${priceRange[0]} - ${priceRange[1]}
-                </label>
-                <div className="space-y-2">
-                  <input
-                    type="range"
-                    min="0"
-                    max="200"
-                    value={priceRange[0]}
-                    onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                    className="w-full"
-                  />
-                  <input
-                    type="range"
-                    min="0"
-                    max="200"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                    className="w-full"
-                  />
+              {/* Price Range — not relevant for org-covered sessions */}
+              {!isOrgBound && (
+                <div>
+                  <label className="text-sm font-semibold text-gray-900 block mb-3">
+                    Price Range: ${priceRange[0]} - ${priceRange[1]}
+                  </label>
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="200"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                      className="w-full"
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="200"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Minimum Rating */}
               <div>

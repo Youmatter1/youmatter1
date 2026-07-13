@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import {
   Home, Calendar, MessageSquare, Clock, User, LogOut, Settings, Video, Users, CheckCircle, BarChart2,
 } from 'lucide-react';
+import { OrgContextBanner } from '@/components/dashboard/org-context-banner';
 
 interface Session {
   id: number;
@@ -173,6 +174,8 @@ export default function ClinicianDashboardPage() {
             </div>
           </div>
         </div>
+
+        <OrgContextBanner />
 
         <div className="p-8 space-y-8">
           {/* Stats Row */}

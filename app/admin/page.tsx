@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
-import { Home, Users, UserCheck, Star, LogOut, Settings } from 'lucide-react';
+import { Home, Users, UserCheck, Star, LogOut, Settings, Building2 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const { user, logout, isLoading } = useAuth();
@@ -32,6 +32,7 @@ export default function AdminDashboardPage() {
   const navItems = [
     { icon: Home, label: 'Dashboard', href: '/admin' },
     { icon: Users, label: 'Users', href: '/admin/users' },
+    { icon: Building2, label: 'Organizations', href: '/admin/organizations' },
     { icon: UserCheck, label: 'Therapist Approvals', href: '/admin/therapist' },
     { icon: Star, label: 'Testimonials', href: '/admin/testimonials' },
   ];

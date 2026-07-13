@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
-import { userQueries, patientQueries, therapistQueries, systemAdminQueries } from '@/lib/db';
+import { userQueries, patientQueries, therapistQueries, systemAdminQueries, organizationQueries } from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
@@ -29,6 +29,13 @@ export async function GET(request: Request) {
         break;
     }
 
+    // Re-resolve org context fresh from the DB (not the token) on every profile
+    // fetch, so the org context banner and scoping reflect removal from an org
+    // immediately rather than waiting out the token's 7-day expiry.
+    const membership = await organizationQueries.getMembershipByUserId(currentUser.userId) as any;
+    const organization_id = membership ? Number(membership.organization_id) : null;
+    const org_role = membership ? membership.org_role : null;
+
     if (!profile) {
       // Return user info without profile if profile doesn't exist yet
       // This allows login to succeed even if profile is not fully set up
@@ -39,6 +46,8 @@ export async function GET(request: Request) {
           email: currentUser.email,
           role: currentUser.role,
           profile: null,
+          organization_id,
+          org_role,
         },
       });
     }
@@ -50,6 +59,8 @@ export async function GET(request: Request) {
         email: currentUser.email,
         role: currentUser.role,
         profile,
+        organization_id,
+        org_role,
       },
     });
   } catch (error) {

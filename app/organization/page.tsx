@@ -14,10 +14,12 @@ interface DashboardData {
   };
   stats: {
     totalMembers: number;
+    totalTherapists: number;
     activeMembersThisMonth: number;
     sessionsThisMonth: number;
     pendingInvitations: number;
     maxSeats: number;
+    seatsUsed: number;
     seatsRemaining: number;
     utilizationRate: number;
   };
@@ -96,17 +98,12 @@ export default function OrganizationDashboardPage() {
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Total Members" value={String(stats.totalMembers)} />
+        <StatCard label="Total Members" value={String(stats.totalMembers)} trendLabel="patients" />
+        <StatCard label="Total Therapists" value={String(stats.totalTherapists)} />
+        <StatCard label="Active Sessions This Month" value={String(stats.sessionsThisMonth)} />
         <StatCard
-          label="Active This Month"
-          value={String(stats.activeMembersThisMonth)}
-          trend={`${stats.utilizationRate}%`}
-          trendLabel="utilization"
-        />
-        <StatCard label="Sessions Used" value={String(stats.sessionsThisMonth)} trendLabel="this month" />
-        <StatCard
-          label="Seats Remaining"
-          value={String(stats.seatsRemaining)}
+          label="Seats Used"
+          value={String(stats.seatsUsed)}
           trendLabel={`of ${stats.maxSeats} seats`}
         />
       </div>

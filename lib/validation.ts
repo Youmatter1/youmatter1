@@ -52,6 +52,10 @@ const urlSchema = z.string()
 export const loginSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, 'Password is required'),
+  // When present, the login must belong to exactly this role — lets the
+  // account-type picker on the sign-in screen act as a real boundary rather
+  // than a cosmetic label.
+  role: z.enum(['patient', 'therapist', 'org_admin']).optional(),
 });
 
 export const registerPatientSchema = z.object({
@@ -193,6 +197,26 @@ export const updateLessonSchema = z.object({
 
 export const inviteOrganizationMemberSchema = z.object({
   email: emailSchema,
+  invite_role: z.enum(['therapist', 'member']).default('member'),
+  name: nameSchema.optional(),
+});
+
+export const orgLoginSchema = z.object({
+  email: emailSchema,
+  password: z.string().min(1, 'Password is required'),
+  slug: z.string().min(1, 'Organization is required'),
+});
+
+export const acceptInviteSchema = z.object({
+  token: z.string().min(1, 'Invite token is required'),
+  name: nameSchema,
+  password: passwordSchema,
+  therapist_profile: z.object({
+    specialization: z.string().min(2, 'Specialization must be at least 2 characters').max(100).trim(),
+    license_number: z.string().optional(),
+    years_of_experience: z.number().int().min(0).max(50).optional(),
+    bio: z.string().max(1000, 'Bio must not exceed 1000 characters').optional(),
+  }).optional(),
 });
 
 export const updateOrganizationSchema = z.object({
@@ -200,6 +224,16 @@ export const updateOrganizationSchema = z.object({
   domain: z.string().max(255, 'Domain must not exceed 255 characters').trim().optional(),
   logo_url: urlSchema,
   billing_email: z.string().email('Invalid billing email').optional().or(z.literal('')),
+});
+
+export const checkoutSchema = z.object({
+  plan_tier: z.enum(['starter', 'growth', 'enterprise']),
+  billing_cycle: z.enum(['monthly', 'annual']),
+  seats: z.number().int().min(1, 'At least 1 seat is required').max(100000),
+});
+
+export const updateSeatsSchema = z.object({
+  seats: z.number().int().min(1, 'At least 1 seat is required').max(100000),
 });
 
 // ==========================================

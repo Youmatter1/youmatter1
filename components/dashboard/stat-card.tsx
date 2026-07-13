@@ -12,10 +12,10 @@ export function StatCard({ label, value, trend, trendLabel }: StatCardProps) {
         {label}
       </p>
       <p className="text-2xl font-semibold text-[black]">{value}</p>
-      {trend ? (
+      {trend || trendLabel ? (
         <p className="text-xs font-semibold text-[gray-700]">
           {trend}
-          {trendLabel ? <span className="ml-1 text-[gray-400]">{trendLabel}</span> : null}
+          {trendLabel ? <span className={trend ? 'ml-1 text-[gray-400]' : 'text-[gray-400]'}>{trendLabel}</span> : null}
         </p>
       ) : null}
     </div>

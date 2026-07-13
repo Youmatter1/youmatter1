@@ -21,22 +21,28 @@ export async function GET(request: Request) {
 
     const [
       totalMembersRes,
+      totalTherapistsRes,
       activeThisMonthRes,
       sessionsThisMonthRes,
       pendingInvitationsRes,
+      seatsUsedRes,
       recentActivity,
     ] = await Promise.all([
       organizationQueries.countMembers(organizationId),
+      organizationQueries.countTherapists(organizationId),
       organizationQueries.countActiveMembersThisMonth(organizationId),
       organizationQueries.countSessionsThisMonth(organizationId),
       organizationQueries.countPendingInvitations(organizationId),
+      organizationQueries.countSeatsUsed(organizationId),
       organizationQueries.getRecentActivity(organizationId, 10),
     ]);
 
     const totalMembers = Number((totalMembersRes as any)?.count || 0);
+    const totalTherapists = Number((totalTherapistsRes as any)?.count || 0);
     const activeMembersThisMonth = Number((activeThisMonthRes as any)?.count || 0);
     const sessionsThisMonth = Number((sessionsThisMonthRes as any)?.count || 0);
     const pendingInvitations = Number((pendingInvitationsRes as any)?.count || 0);
+    const seatsUsed = Number((seatsUsedRes as any)?.count || 0);
     const maxSeats = Number(membership.max_seats || 0);
     const utilizationRate = totalMembers > 0 ? Math.round((activeMembersThisMonth / totalMembers) * 100) : 0;
 
@@ -52,11 +58,13 @@ export async function GET(request: Request) {
         },
         stats: {
           totalMembers,
+          totalTherapists,
           activeMembersThisMonth,
           sessionsThisMonth,
           pendingInvitations,
           maxSeats,
-          seatsRemaining: Math.max(maxSeats - totalMembers, 0),
+          seatsUsed,
+          seatsRemaining: Math.max(maxSeats - seatsUsed, 0),
           utilizationRate,
         },
         recentActivity,

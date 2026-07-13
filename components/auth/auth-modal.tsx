@@ -32,7 +32,7 @@ export function AuthModal({ open, onOpenChange, initialMode = "login", preSelect
 
           {mode === "login" && (
             <>
-              <LoginForm />
+              <LoginForm preSelectedRole={preSelectedRole ? preSelectedRole : undefined} />
               <div className="text-center text-sm text-gray-600">
                 Don't have an account?{" "}
                 <button

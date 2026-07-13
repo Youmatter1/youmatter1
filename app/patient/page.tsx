@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
+import { OrgContextBanner } from '@/components/dashboard/org-context-banner';
 
 interface Session {
   id: number;
@@ -161,6 +162,8 @@ export default function PatientDashboard() {
             </div>
           </div>
         </div>
+
+        <OrgContextBanner />
 
         <div className="p-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

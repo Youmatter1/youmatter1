@@ -220,6 +220,57 @@ export const emailTemplates = {
     `,
   }),
 
+  organizationInvite: (data: {
+    recipientName: string;
+    organizationName: string;
+    orgRole: 'therapist' | 'member';
+    acceptLink: string;
+  }) => {
+    const roleLabel = data.orgRole === 'therapist' ? 'Therapist' : 'Member';
+    return {
+      subject: `${data.organizationName} has invited you to You Matter`,
+      html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 0 auto; padding: 2px; background: #f8f9fa; }
+          .header { background: linear-gradient(135deg, #16a34a, #15803d); color: white; padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0; }
+          .header h1 { margin: 0; font-size: 26px; font-weight: 600; }
+          .content { background: white; padding: 40px 30px; border-radius: 0 0 12px 12px; }
+          .role-badge { background: #ecfdf5; color: #16a34a; padding: 6px 14px; border-radius: 20px; display: inline-block; margin: 16px 0; font-weight: 600; font-size: 13px; }
+          .button { display: inline-block; background: #16a34a; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; margin: 25px 0; font-weight: 600; }
+          .button:hover { background: #15803d; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 13px; padding: 20px; }
+          .note { background: #fafafa; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px; color: #666; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>You've Been Invited</h1>
+          </div>
+          <div class="content">
+            <p>Hi ${data.recipientName},</p>
+            <p><strong>${data.organizationName}</strong> has invited you to join their wellness program on You Matter.</p>
+            <div class="role-badge">Joining as: ${roleLabel}</div>
+            <p>Click the button below to set up your account and get started:</p>
+            <center>
+              <a href="${data.acceptLink}" class="button">Accept Invitation</a>
+            </center>
+            <div class="note">This link expires in 7 days. If you weren't expecting this invitation, you can safely ignore this email.</div>
+          </div>
+          <div class="footer">
+            <p>© 2026 You Matter. You don't have to heal alone.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    };
+  },
+
   invite: (data: {
     recipientName: string;
     senderName: string;

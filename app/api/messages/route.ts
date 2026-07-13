@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest, assertSameOrg } from '@/lib/auth';
 import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -95,11 +95,21 @@ export async function POST(request: Request) {
     if (!patient) return NextResponse.json({ error: 'Patient profile not found' }, { status: 404 });
 
     const therapistResult = await db.execute({
-      sql: 'SELECT id FROM therapists WHERE id = ?',
+      sql: `SELECT t.id, u.organization_id
+            FROM therapists t JOIN users u ON t.user_id = u.id
+            WHERE t.id = ?`,
       args: [parseInt(String(therapist_id))],
     });
-    if (!therapistResult.rows[0]) {
+    const therapistRow = therapistResult.rows[0] as unknown as { id: number; organization_id: number | null } | undefined;
+    if (!therapistRow) {
       return NextResponse.json({ error: 'Therapist not found' }, { status: 404 });
+    }
+
+    if (!assertSameOrg(user.organization_id ?? null, therapistRow.organization_id ?? null)) {
+      return NextResponse.json(
+        { error: 'You can only message therapists in your organization.' },
+        { status: 403 }
+      );
     }
 
     // Find existing or create new

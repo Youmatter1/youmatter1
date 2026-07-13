@@ -20,6 +20,7 @@ import {
   RiArticleLine,
   RiStarLine,
 } from "react-icons/ri";
+import { CreditCard } from "lucide-react";
 import type { NavItem } from "@/lib/navigation";
 
 interface DashboardShellProps {
@@ -45,6 +46,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   user: RiUserLine,
   blogs: RiArticleLine,
   testimonials: RiStarLine,
+  billing: CreditCard,
 };
 
 export function DashboardShell({

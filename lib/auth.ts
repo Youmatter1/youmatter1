@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { userQueries, systemAdminQueries } from '@/lib/db';
+import { userQueries, systemAdminQueries, organizationQueries } from '@/lib/db';
 import { jwtVerify } from 'jose';
 
 // Enforce JWT_SECRET in production
@@ -17,6 +17,19 @@ export interface TokenPayload {
   role: 'patient' | 'therapist' | 'admin' | 'org_admin';
   subscription_status?: string;
   is_verified?: number;
+  // Org-scoped tenancy: both null for independent (B2C) users. When set, this
+  // user only sees other users/sessions within the same organization_id.
+  organization_id?: number | null;
+  org_role?: 'org_admin' | 'therapist' | 'member' | null;
+}
+
+// Returns true if both users can interact: either both are independent (null),
+// or both belong to the same organization. Used to gate cross-user access
+// (booking, messaging, browsing) everywhere org-scoping applies.
+export function assertSameOrg(user1OrgId: number | null | undefined, user2OrgId: number | null | undefined): boolean {
+  const a = user1OrgId ?? null;
+  const b = user2OrgId ?? null;
+  return a === b;
 }
 
 // generating JWT token
@@ -79,12 +92,27 @@ export async function authenticateUser(email: string, password: string) {
       ? user.role
       : 'patient';
 
+    // Resolve org context (organization_id + org_role) for org-bound users.
+    // Covers org_admins too, not just invite-accepted therapists/members —
+    // org_admins don't get users.organization_id set, but do have an
+    // organization_members row, so the membership lookup catches both cases.
+    // Independent users have no membership row, so both stay null.
+    let organizationId: number | null = null;
+    let orgRole: 'org_admin' | 'therapist' | 'member' | null = null;
+    const membership = await organizationQueries.getMembershipByUserId(user.id) as any;
+    if (membership) {
+      organizationId = Number(membership.organization_id);
+      orgRole = membership.org_role;
+    }
+
     const token = generateToken({
       userId: user.id,
       email: user.email,
       role,
       subscription_status: user.subscription_status,
       is_verified: user.is_verified,
+      organization_id: organizationId,
+      org_role: orgRole,
     });
 
     return {
@@ -96,6 +124,8 @@ export async function authenticateUser(email: string, password: string) {
         role,
         isVerified: user.is_verified,
         subscription_status: user.subscription_status,
+        organization_id: organizationId,
+        org_role: orgRole,
       },
     };
   } catch (error) {

@@ -50,6 +50,11 @@ export async function GET(request: Request) {
 
     const params: any[] = [patient.id];
 
+    if (currentUser.organization_id) {
+      query += ' AND s.organization_id = ?';
+      params.push(currentUser.organization_id);
+    }
+
     if (date) {
       query += ' AND s.scheduled_date = ?';
       params.push(date);

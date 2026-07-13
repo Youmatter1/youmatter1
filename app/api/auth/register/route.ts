@@ -4,6 +4,7 @@ import { userQueries, patientQueries, therapistQueries, organizationQueries } fr
 import db from '@/lib/db';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import { validateRequest, registerSchema } from '@/lib/validation';
+import { generateUniqueOrgSlug } from '@/lib/organization';
 
 const DOCUMENT_TYPE_MAP = ['government_id', 'professional_license', 'graduate_degree', 'liability_insurance'] as const;
 
@@ -163,7 +164,8 @@ export async function POST(request: Request) {
       }
     } else if (role === 'org_admin') {
       const { organization_name, domain } = body;
-      const orgResult = await organizationQueries.createOrganization(organization_name, domain || null, email);
+      const slug = await generateUniqueOrgSlug(organization_name);
+      const orgResult = await organizationQueries.createOrganization(organization_name, domain || null, email, slug);
       let organizationId = orgResult.lastInsertRowid ? Number(orgResult.lastInsertRowid) : 0;
 
       if (!organizationId) {

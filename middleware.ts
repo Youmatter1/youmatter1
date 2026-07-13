@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check if it's a public route - use startsWith for path prefixes
-  const isPublic = 
+  const isPublic =
     pathname === '/' ||
     pathname === '/login' ||
     pathname === '/signup' ||
@@ -43,9 +43,12 @@ export async function middleware(request: NextRequest) {
     pathname === '/testimonials' ||
     pathname === '/api-docs' ||
     pathname === '/donate' ||
+    pathname === '/for-organizations' ||
     pathname.startsWith('/patient/find-therapist') ||
     pathname.startsWith('/patient/clinician') ||
-    pathname.startsWith('/patient/book-session');
+    pathname.startsWith('/patient/book-session') ||
+    pathname.startsWith('/org/') ||
+    pathname.startsWith('/invite/');
 
   if (isPublic) {
     return NextResponse.next();

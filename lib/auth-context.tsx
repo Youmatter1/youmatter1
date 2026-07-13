@@ -9,12 +9,15 @@ interface User {
   role: 'patient' | 'therapist' | 'admin' | 'org_admin';
   isVerified: boolean;
   profile?: any;
+  // Org-scoped tenancy: both null for independent (B2C) users.
+  organization_id?: number | null;
+  org_role?: 'org_admin' | 'therapist' | 'member' | null;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, expectedRole?: 'patient' | 'therapist' | 'org_admin') => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
@@ -57,6 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: data.user.role,
             isVerified: true,
             profile: data.user.profile,
+            organization_id: data.user.organization_id ?? null,
+            org_role: data.user.org_role ?? null,
           });
           setToken(authToken);
         }
@@ -72,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, expectedRole?: 'patient' | 'therapist' | 'org_admin') => {
     setIsLoading(true);
     setError(null);
 
@@ -83,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role: expectedRole }),
       });
 
       const data = await response.json();
@@ -104,6 +109,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: data.user.email,
         role: data.user.role,
         isVerified: data.user.isVerified === 1,
+        organization_id: data.user.organization_id ?? null,
+        org_role: data.user.org_role ?? null,
       });
 
       console.log('User role:', data.user.role);
@@ -114,12 +121,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'patient': '/patient',
         'org_admin': '/organization',
       };
+      const roleHome = redirectMap[data.user.role as keyof typeof redirectMap] || '/';
 
-      // Check for redirect param in URL
+      // Only honor a ?redirect= param if it actually belongs to this role's area —
+      // otherwise a stale param from a previous session (e.g. someone else's link,
+      // or a leftover ?redirect=/organization from testing a different account)
+      // would silently send this user into the wrong dashboard.
       const searchParams = new URLSearchParams(window.location.search);
       const redirectParam = searchParams.get('redirect');
-
-      const redirectPath = redirectParam || redirectMap[data.user.role as keyof typeof redirectMap] || '/';
+      const redirectPath = redirectParam && redirectParam.startsWith(roleHome) ? redirectParam : roleHome;
       console.log('Redirecting to:', redirectPath);
 
       // Use window.location for a hard redirect to ensure middleware runs

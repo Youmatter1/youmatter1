@@ -9,6 +9,10 @@ CREATE TABLE IF NOT EXISTS users (
     role TEXT NOT NULL CHECK(role IN ('patient', 'therapist', 'admin', 'org_admin')),
     is_verified BOOLEAN DEFAULT 0,
     is_active BOOLEAN DEFAULT 1,
+    -- Denormalized shortcut so middleware/JWT creation can resolve a user's org
+    -- without joining through organization_members every request. NULL for
+    -- independent users; set once during invite-accept for org-bound therapists/members.
+    organization_id INTEGER REFERENCES organizations(id) DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -96,6 +100,9 @@ CREATE TABLE IF NOT EXISTS sessions (
     status TEXT CHECK(status IN ('scheduled', 'completed', 'cancelled', 'no_show')) DEFAULT 'scheduled',
     notes TEXT,
     meeting_link TEXT,
+    -- NULL for independent (per-session, B2C) bookings; set only when both the
+    -- patient and therapist belong to the same organization.
+    organization_id INTEGER REFERENCES organizations(id) DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
@@ -270,6 +277,9 @@ CREATE TABLE IF NOT EXISTS organizations (
     name TEXT NOT NULL,
     domain TEXT,
     logo_url TEXT,
+    slug TEXT,
+    welcome_message TEXT DEFAULT 'Welcome to our wellness program',
+    primary_color TEXT DEFAULT '#4F46E5',
     plan_tier TEXT CHECK(plan_tier IN ('free', 'pro', 'enterprise')) DEFAULT 'free',
     billing_email TEXT,
     max_seats INTEGER DEFAULT 10,
@@ -278,13 +288,16 @@ CREATE TABLE IF NOT EXISTS organizations (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Organization members (links a user, usually role='patient', to an organization;
--- the org_admin who manages the dashboard is also a row here with org_role='org_admin')
+CREATE UNIQUE INDEX idx_organizations_slug ON organizations(slug);
+
+-- Organization members (links a user to an organization with an org-scoped role;
+-- 'org_admin' manages the dashboard, 'therapist' and 'member' are org-scoped
+-- versions of the base therapist/patient roles who only see others in the same org)
 CREATE TABLE IF NOT EXISTS organization_members (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    org_role TEXT NOT NULL CHECK(org_role IN ('org_admin', 'member')) DEFAULT 'member',
+    org_role TEXT NOT NULL CHECK(org_role IN ('org_admin', 'therapist', 'member')) DEFAULT 'member',
     invited_by INTEGER,
     invited_at DATETIME,
     joined_at DATETIME,
@@ -295,11 +308,13 @@ CREATE TABLE IF NOT EXISTS organization_members (
     FOREIGN KEY (invited_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Pending email invitations to join an organization
+-- Pending email invitations to join an organization, as either a therapist or a member
 CREATE TABLE IF NOT EXISTS organization_invitations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_id INTEGER NOT NULL,
     email TEXT NOT NULL,
+    name TEXT,
+    org_role TEXT NOT NULL CHECK(org_role IN ('therapist', 'member')) DEFAULT 'member',
     token TEXT UNIQUE NOT NULL,
     invited_by INTEGER,
     expires_at DATETIME NOT NULL,
@@ -313,3 +328,5 @@ CREATE INDEX idx_org_members_org ON organization_members(organization_id);
 CREATE INDEX idx_org_members_user ON organization_members(user_id);
 CREATE INDEX idx_org_invitations_org ON organization_invitations(organization_id);
 CREATE INDEX idx_org_invitations_email ON organization_invitations(email);
+CREATE INDEX idx_sessions_organization ON sessions(organization_id);
+CREATE INDEX idx_users_organization ON users(organization_id);

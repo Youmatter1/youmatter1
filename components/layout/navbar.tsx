@@ -46,41 +46,20 @@ export function Navbar() {
           >
             Donate
           </Link>
+          <Link
+            href="/login"
+            className="rounded-full px-5 py-2 text-sm font-semibold text-black/70 transition hover:text-black"
+          >
+            Log In
+          </Link>
           <button
             onClick={() => {
               setPreSelectedRole(null);
               setAuthModalOpen(true);
             }}
-            className="rounded-full px-5 py-2 text-sm font-semibold text-black/70 transition hover:text-black"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => {
-              setPreSelectedRole('therapist');
-              setAuthModalOpen(true);
-            }}
             className={buttonVariants({ variant: "secondary" })}
           >
-            I'm a Professional
-          </button>
-          <button
-            onClick={() => {
-              setPreSelectedRole('patient');
-              setAuthModalOpen(true);
-            }}
-            className={buttonVariants({ variant: "secondary" })}
-          >
-            Get Started
-          </button>
-          <button
-            onClick={() => {
-              setPreSelectedRole('org_admin');
-              setAuthModalOpen(true);
-            }}
-            className="rounded-full px-5 py-2 text-sm font-semibold text-black/70 border border-black/20 transition hover:text-black hover:bg-black/5"
-          >
-            For Organizations
+            Sign Up
           </button>
         </div>
 
@@ -117,45 +96,22 @@ export function Navbar() {
               >
                 Donate
               </Link>
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors"
+              >
+                Log In
+              </Link>
               <button
                 onClick={() => {
                   setPreSelectedRole(null);
                   setAuthModalOpen(true);
                   setIsMobileMenuOpen(false);
                 }}
-                className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors text-left"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => {
-                  setPreSelectedRole('therapist');
-                  setAuthModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
                 className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors text-left w-full"
               >
-                I'm a Professional
-              </button>
-              <button
-                onClick={() => {
-                  setPreSelectedRole('patient');
-                  setAuthModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors text-left w-full"
-              >
-                Get Started
-              </button>
-              <button
-                onClick={() => {
-                  setPreSelectedRole('org_admin');
-                  setAuthModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="rounded-2xl px-4 py-3 text-sm font-semibold text-black/70 hover:bg-black/5 hover:text-black transition-colors text-left w-full"
-              >
-                For Organizations
+                Sign Up
               </button>
             </nav>
           </div>
@@ -165,7 +121,7 @@ export function Navbar() {
       <AuthModal
         open={authModalOpen}
         onOpenChange={setAuthModalOpen}
-        initialMode={preSelectedRole ? "signup" : "login"}
+        initialMode="signup"
         preSelectedRole={preSelectedRole}
       />
     </header>

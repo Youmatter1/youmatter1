@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getUserFromRequest, assertSameOrg } from '@/lib/auth';
 import db from '@/lib/db';
 
 // GET /api/patient/therapist/[id] - Get therapist profile by ID
@@ -13,20 +14,29 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       );
     }
 
+    const currentUser = getUserFromRequest(request);
+
     const therapistRes = await db.execute({
-      sql: `SELECT t.*, u.email, u.is_verified, u.is_active
+      sql: `SELECT t.*, u.email, u.is_verified, u.is_active, u.organization_id
             FROM therapists t
             JOIN users u ON t.user_id = u.id
             WHERE t.id = ?`,
       args: [parseInt(id)]
     });
 
-    const therapist = therapistRes.rows[0];
+    const therapist = therapistRes.rows[0] as any;
 
     if (!therapist) {
       return NextResponse.json(
         { error: 'Therapist not found' },
         { status: 404 }
+      );
+    }
+
+    if (!assertSameOrg(currentUser?.organization_id ?? null, therapist.organization_id ?? null)) {
+      return NextResponse.json(
+        { error: 'You do not have access to this therapist profile' },
+        { status: 403 }
       );
     }
 

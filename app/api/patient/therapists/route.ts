@@ -1,21 +1,35 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@libsql/client';
+import { getUserFromRequest } from '@/lib/auth';
 
 const client = createClient({
   url: process.env.TURSO_DATABASE_URL || 'file:youmatter.db',
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
-// GET /api/patient/therapists - Get all therapists
+// GET /api/patient/therapists - Get all therapists.
+// Org-bound patients only see their own organization's therapists; independent
+// patients see the public marketplace (org-bound therapists excluded).
 export async function GET(request: Request) {
   try {
+    const currentUser = getUserFromRequest(request);
+    const organizationId = currentUser?.organization_id ?? null;
+
+    const { searchParams } = new URL(request.url);
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? Math.min(Math.max(parseInt(limitParam, 10) || 0, 1), 100) : null;
+
+    const orgFilter = organizationId ? 'u.organization_id = ?' : 'u.organization_id IS NULL';
+
     const therapistsRes = await client.execute({
       sql: `SELECT t.*, u.email, u.is_verified, u.is_active
             FROM therapists t
             JOIN users u ON t.user_id = u.id
-            WHERE t.verification_status = 'approved' AND u.is_active = 1
-            ORDER BY t.average_rating DESC`,
-      args: []
+            WHERE t.verification_status = 'approved' AND u.is_active = 1 AND ${orgFilter}
+            ORDER BY t.average_rating DESC${limit ? ' LIMIT ?' : ''}`,
+      args: organizationId
+        ? (limit ? [organizationId, limit] : [organizationId])
+        : (limit ? [limit] : [])
     });
 
     const therapists = therapistsRes.rows.map((t: any) => ({
