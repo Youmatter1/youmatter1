@@ -269,12 +269,16 @@ export default function TherapistProfilePage() {
           {/* Right — Booking sidebar */}
           <div className="space-y-6">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sticky top-24">
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Session Pricing</h3>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
-                {profile.consultation_fee ? `$${profile.consultation_fee.toFixed(0)}` : 'Contact for pricing'}
-              </p>
-              {profile.consultation_fee && (
-                <p className="text-sm text-gray-500 mb-6">per session · Insurance accepted</p>
+              {!user?.organization_id && (
+                <>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">Session Pricing</h3>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">
+                    {profile.consultation_fee ? `$${profile.consultation_fee.toFixed(0)}` : 'Contact for pricing'}
+                  </p>
+                  {profile.consultation_fee && (
+                    <p className="text-sm text-gray-500 mb-6">per session · Insurance accepted</p>
+                  )}
+                </>
               )}
 
               <Button

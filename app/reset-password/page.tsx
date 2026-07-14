@@ -9,10 +9,19 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle, Circle } from 'lucide-react';
 
+// Only ever navigate to an in-app relative path — the redirect value came
+// through a URL query string, so treat it as untrusted.
+function sanitizeRedirect(redirect: string | null): string {
+  if (!redirect) return '/login';
+  if (!redirect.startsWith('/') || redirect.startsWith('//')) return '/login';
+  return redirect;
+}
+
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const loginHref = sanitizeRedirect(searchParams.get('redirect'));
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,7 +42,10 @@ function ResetPasswordForm() {
       <div className="rounded-2xl bg-red-50 border border-red-200 p-4 text-sm text-red-800 text-center">
         <p className="font-semibold mb-2">Invalid Link</p>
         <p>This password reset link is invalid or has expired.</p>
-        <Link href="/forgot-password" className="mt-4 inline-block underline font-medium">
+        <Link
+          href={loginHref === '/login' ? '/forgot-password' : `/forgot-password?redirect=${encodeURIComponent(loginHref)}`}
+          className="mt-4 inline-block underline font-medium"
+        >
           Request a new link
         </Link>
       </div>
@@ -69,7 +81,7 @@ function ResetPasswordForm() {
       }
 
       setIsSuccess(true);
-      setTimeout(() => router.push('/login'), 3000);
+      setTimeout(() => router.push(loginHref), 3000);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     } finally {
@@ -87,7 +99,7 @@ function ResetPasswordForm() {
         <p className="text-gray-600 mb-6">
           Your password has been updated. Redirecting you to login...
         </p>
-        <Button onClick={() => router.push('/login')} className="w-full">
+        <Button onClick={() => router.push(loginHref)} className="w-full">
           Go to Login
         </Button>
       </div>
@@ -166,7 +178,10 @@ function ResetPasswordForm() {
   );
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordShell() {
+  const searchParams = useSearchParams();
+  const loginHref = sanitizeRedirect(searchParams.get('redirect'));
+
   return (
     <AuthShell
       title="Reset Password"
@@ -174,7 +189,7 @@ export default function ResetPasswordPage() {
       description="Please choose a strong password for your account."
       footer={
         <Link
-          href="/login"
+          href={loginHref}
           className="inline-flex items-center text-sm font-semibold text-black hover:text-gray-700 transition"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -182,9 +197,15 @@ export default function ResetPasswordPage() {
         </Link>
       }
     >
-      <Suspense fallback={<div>Loading...</div>}>
-        <ResetPasswordForm />
-      </Suspense>
+      <ResetPasswordForm />
     </AuthShell>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <ResetPasswordShell />
+    </Suspense>
   );
 }

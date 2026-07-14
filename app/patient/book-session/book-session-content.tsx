@@ -83,21 +83,9 @@ export default function BookSessionContent() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const isOrgBound = Boolean(user?.organization_id);
 
-    if (!selectedDate || !selectedTime) {
-      setError('Please select a date and time');
-      return;
-    }
-
-    // Open payment modal — session is only created after successful payment
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = async (paymentIntentId: string) => {
-    setShowPaymentModal(false);
+  const bookSession = async (paymentIntentId?: string) => {
     setSubmitting(true);
     setError(null);
     try {
@@ -111,7 +99,7 @@ export default function BookSessionContent() {
           scheduled_time: selectedTime,
           session_type: sessionType,
           notes,
-          payment_intent_id: paymentIntentId,
+          ...(paymentIntentId ? { payment_intent_id: paymentIntentId } : {}),
         }),
       });
 
@@ -126,6 +114,32 @@ export default function BookSessionContent() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!selectedDate || !selectedTime) {
+      setError('Please select a date and time');
+      return;
+    }
+
+    // Org-covered sessions skip payment entirely — the organization already
+    // pays for this via seats/subscription, so book directly.
+    if (isOrgBound) {
+      bookSession();
+      return;
+    }
+
+    // Independent (B2C) sessions require payment first — session is only
+    // created after successful payment.
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = async (paymentIntentId: string) => {
+    setShowPaymentModal(false);
+    await bookSession(paymentIntentId);
   };
 
   if (loading || authLoading) {
@@ -344,16 +358,18 @@ export default function BookSessionContent() {
             </div>
           </div>
 
-          <div className="pt-4">
-            <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Total Price</p>
-            <p className="text-2xl font-bold text-black">
-              {formatPrice(therapist.consultation_fee, therapist.session_price)}
-            </p>
-          </div>
+          {!isOrgBound && (
+            <div className="pt-4">
+              <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Total Price</p>
+              <p className="text-2xl font-bold text-black">
+                {formatPrice(therapist.consultation_fee, therapist.session_price)}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      {therapist && (
+      {therapist && !isOrgBound && (
         <BookingPaymentModal
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}

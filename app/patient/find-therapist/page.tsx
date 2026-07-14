@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Filter, X, Star, Clock, DollarSign } from 'lucide-react';
+import { Search, Filter, X, Star, Clock, DollarSign, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
@@ -23,7 +23,7 @@ const specialties = ['Anxiety', 'Depression', 'Trauma', 'Relationships', 'PTSD',
 const therapyTypes = ['CBT', 'Psychodynamic', 'Couples Therapy', 'Family Therapy', 'EMDR', 'Mindfulness', 'Humanistic'];
 const languages = ['English', 'Spanish', 'French', 'Yoruba', 'Swahili', 'Twi', 'Igbo', 'Arabic'];
 
-function TherapistCard({ therapist }: { therapist: Therapist }) {
+function TherapistCard({ therapist, isOrgBound }: { therapist: Therapist; isOrgBound: boolean }) {
   return (
     <Link href={`/patient/clinician/${therapist.id}`}>
       <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden hover:shadow-lg hover:border-green-300 transition-all duration-300 h-full flex flex-col group cursor-pointer">
@@ -74,10 +74,12 @@ function TherapistCard({ therapist }: { therapist: Therapist }) {
               <Clock className="w-4 h-4 text-gray-400" />
               <span>{therapist.years_of_experience} years experience</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-700">
-              <DollarSign className="w-4 h-4 text-gray-400" />
-              <span>${therapist.consultation_fee}/session</span>
-            </div>
+            {!isOrgBound && (
+              <div className="flex items-center gap-2 text-gray-700">
+                <DollarSign className="w-4 h-4 text-gray-400" />
+                <span>${therapist.consultation_fee}/session</span>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-green-600 font-medium">
               <span className="w-2 h-2 rounded-full bg-green-600"></span>
               {therapist.is_verified ? 'Verified & Available' : 'Pending Verification'}
@@ -171,6 +173,11 @@ export default function FindTherapistPage() {
       <div className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4 mb-4">
+            <Link href="/patient">
+              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+            </Link>
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900">
                 {isOrgBound && organizationName ? `Your ${organizationName} Therapists` : 'Find Your Therapist'}
@@ -380,7 +387,7 @@ export default function FindTherapistPage() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredTherapists.map((therapist) => (
-                  <TherapistCard key={therapist.id} therapist={therapist} />
+                  <TherapistCard key={therapist.id} therapist={therapist} isOrgBound={isOrgBound} />
                 ))}
               </div>
             </div>

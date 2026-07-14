@@ -454,6 +454,18 @@ export const organizationQueries = {
     return rs.rows[0];
   },
 
+  // Scoped to organizationId so one org's admin can't cancel another org's
+  // invitation by guessing an id. Only cancels if it's still pending
+  // (unaccepted) — a bad token is otherwise harmless to try to delete.
+  cancelInvitation: async (organizationId: number | string, invitationId: number | string) => {
+    const rs = await client.execute({
+      sql: `DELETE FROM organization_invitations
+            WHERE id = ? AND organization_id = ? AND accepted_at IS NULL`,
+      args: [invitationId, organizationId]
+    });
+    return rs.rowsAffected > 0;
+  },
+
   // roleFilter: 'member' | 'therapist' | undefined (both). Resolves the display
   // name/picture/session-count from patients or therapists depending on each
   // row's own org_role, since a member's profile lives in one table and a

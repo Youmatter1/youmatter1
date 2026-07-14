@@ -4,9 +4,18 @@ import db from '@/lib/db';
 import crypto from 'crypto';
 import { sendPasswordResetEmail } from '@/lib/email';
 
+// Only allow same-app relative paths through — never an absolute/external URL
+// (this value round-trips through an email link into a client-side redirect).
+function sanitizeRedirect(redirect: unknown): string | undefined {
+    if (typeof redirect !== 'string') return undefined;
+    if (!redirect.startsWith('/') || redirect.startsWith('//')) return undefined;
+    return redirect;
+}
+
 export async function POST(request: Request) {
     try {
-        const { email } = await request.json();
+        const { email, redirect } = await request.json();
+        const redirectPath = sanitizeRedirect(redirect);
 
         if (!email) {
             return NextResponse.json(
@@ -42,7 +51,7 @@ export async function POST(request: Request) {
         });
 
         // Send email
-        const emailResult = await sendPasswordResetEmail(email, token);
+        const emailResult = await sendPasswordResetEmail(email, token, redirectPath);
 
         if (!emailResult.success) {
             // Clean up the token we just inserted so the user can try again

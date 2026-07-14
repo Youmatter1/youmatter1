@@ -52,6 +52,7 @@ function PatientMessagesPage() {
   const [sending, setSending] = useState(false);
   const [loadingConvs, setLoadingConvs] = useState(true);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -105,19 +106,24 @@ function PatientMessagesPage() {
       return;
     }
     // Create new conversation
+    setStartError(null);
     fetch('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ therapist_id: parseInt(initTherapistId) }),
     })
-      .then(r => r.json())
-      .then(data => {
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) {
+          setStartError(data.error || 'Unable to start conversation.');
+          return;
+        }
         if (data.conversation_id) {
           fetchConversations();
           setActiveConvId(data.conversation_id);
         }
       })
-      .catch(console.error);
+      .catch(() => setStartError('Unable to start conversation.'));
   }, [token, initTherapistId, loadingConvs]);
 
   // Load messages when active conversation changes
@@ -317,6 +323,14 @@ function PatientMessagesPage() {
               </div>
             </div>
           </>
+        ) : startError ? (
+          <div className="flex-1 flex items-center justify-center flex-col gap-3 text-gray-500 px-6 text-center">
+            <MessageSquare className="w-12 h-12 text-gray-200" />
+            <p className="text-sm font-medium text-gray-700">{startError}</p>
+            <Link href="/patient/find-therapist" className="text-sm font-semibold text-green-700 hover:text-green-800 underline">
+              Find a therapist to book with
+            </Link>
+          </div>
         ) : (
           <div className="flex-1 flex items-center justify-center flex-col gap-3 text-gray-400">
             <MessageSquare className="w-12 h-12 text-gray-200" />

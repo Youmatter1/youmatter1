@@ -87,7 +87,15 @@ export function OrgLoginForm({ slug, organizationName, logoUrl, primaryColor }: 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" requiredIndicator>Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" requiredIndicator>Password</Label>
+                <Link
+                  href={`/forgot-password?redirect=${encodeURIComponent(`/org/${slug}/login`)}`}
+                  className="text-xs font-medium text-gray-500 hover:text-gray-700 underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"

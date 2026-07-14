@@ -112,6 +112,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Independent (B2C) patients must have booked a session with this
+    // therapist before messaging them — prevents messaging before paying for
+    // a session. Org-bound members are exempt (seats already cover access).
+    if (!user.organization_id) {
+      const sessionCheck = await db.execute({
+        sql: 'SELECT id FROM sessions WHERE patient_id = ? AND therapist_id = ? LIMIT 1',
+        args: [patient.id, therapistRow.id],
+      });
+      if (sessionCheck.rows.length === 0) {
+        return NextResponse.json(
+          { error: 'Book a session with this therapist before sending a message.' },
+          { status: 403 }
+        );
+      }
+    }
+
     // Find existing or create new
     const existing = await db.execute({
       sql: 'SELECT id FROM conversations WHERE patient_id = ? AND therapist_id = ?',

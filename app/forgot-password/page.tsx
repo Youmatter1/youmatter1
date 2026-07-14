@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { Suspense, useState, FormEvent } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AuthShell } from '@/components/layout/auth-shell';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
+  const searchParams = useSearchParams();
+  // Where "back to login" / the emailed reset link should return to — lets
+  // org-bound users end up back on their own branded /org/[slug]/login
+  // instead of the generic one.
+  const redirect = searchParams.get('redirect');
+
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -24,7 +31,7 @@ export default function ForgotPasswordPage() {
       const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, redirect }),
       });
 
       const data = await response.json();
@@ -49,7 +56,7 @@ export default function ForgotPasswordPage() {
         description={`We have sent a password reset link to ${email}. Please check your inbox and click the link to reset your password.`}
         footer={
           <Link
-            href="/login"
+            href={redirect || '/login'}
             className="inline-flex items-center text-sm font-semibold text-black hover:text-gray-700 transition"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -71,7 +78,7 @@ export default function ForgotPasswordPage() {
       description="Enter the email address associated with your account and we'll send you a link to reset your password."
       footer={
         <Link
-          href="/login"
+          href={redirect || '/login'}
           className="inline-flex items-center text-sm font-semibold text-black hover:text-gray-700 transition"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -111,5 +118,13 @@ export default function ForgotPasswordPage() {
         </Button>
       </form>
     </AuthShell>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <ForgotPasswordContent />
+    </Suspense>
   );
 }

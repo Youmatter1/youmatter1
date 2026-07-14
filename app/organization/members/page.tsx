@@ -20,6 +20,16 @@ interface OrgMember extends Record<string, unknown> {
   last_session_date: string | null;
 }
 
+interface PendingInvitation extends Record<string, unknown> {
+  id: number;
+  email: string;
+  name: string | null;
+  org_role: 'therapist' | 'member';
+  expires_at: string;
+  created_at: string;
+  invited_by_email: string | null;
+}
+
 type RoleFilter = 'all' | 'therapist' | 'member';
 
 const ROLE_LABELS: Record<'therapist' | 'member' | 'org_admin', string> = {
@@ -43,6 +53,11 @@ export default function OrganizationMembersPage() {
 
   const [removingId, setRemovingId] = useState<number | null>(null);
 
+  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
+  const [pendingLoading, setPendingLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
+  const [pendingError, setPendingError] = useState('');
+
   const fetchMembers = async (filter: RoleFilter) => {
     setLoading(true);
     try {
@@ -58,10 +73,28 @@ export default function OrganizationMembersPage() {
     }
   };
 
+  const fetchPendingInvitations = async () => {
+    setPendingLoading(true);
+    try {
+      const response = await fetch('/api/organization/invitations', { credentials: 'include' });
+      const body = await response.json();
+      if (!response.ok || !body.success) throw new Error(body.error || 'Failed to load pending invitations');
+      setPendingInvitations(body.data || []);
+    } catch (err) {
+      setPendingError(err instanceof Error ? err.message : 'Failed to load pending invitations');
+    } finally {
+      setPendingLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchMembers(roleFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleFilter]);
+
+  useEffect(() => {
+    fetchPendingInvitations();
+  }, []);
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,10 +115,29 @@ export default function OrganizationMembersPage() {
       setInviteName('');
       setInviteRole('member');
       fetchMembers(roleFilter);
+      fetchPendingInvitations();
     } catch (err) {
       setInviteError(err instanceof Error ? err.message : 'Failed to send invitation');
     } finally {
       setInviting(false);
+    }
+  };
+
+  const handleCancelInvitation = async (invitationId: number) => {
+    if (!confirm('Cancel this invitation? The link in the email will stop working.')) return;
+    setCancellingId(invitationId);
+    try {
+      const response = await fetch(`/api/organization/invitations/${invitationId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const body = await response.json();
+      if (!response.ok || !body.success) throw new Error(body.error || 'Failed to cancel invitation');
+      setPendingInvitations((prev) => prev.filter((inv) => inv.id !== invitationId));
+    } catch (err) {
+      setPendingError(err instanceof Error ? err.message : 'Failed to cancel invitation');
+    } finally {
+      setCancellingId(null);
     }
   };
 
@@ -236,6 +288,64 @@ export default function OrganizationMembersPage() {
       </form>
       {inviteMessage ? <p className="text-sm font-medium text-green-700">{inviteMessage}</p> : null}
       {inviteError ? <p className="text-sm font-medium text-red-600">{inviteError}</p> : null}
+
+      <div className="space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-black/50">
+          Pending Invitations
+        </h2>
+        {pendingError ? <p className="text-sm font-medium text-red-600">{pendingError}</p> : null}
+        {pendingLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="h-6 w-6 animate-spin rounded-full border-4 border-black border-t-transparent" />
+          </div>
+        ) : pendingInvitations.length === 0 ? (
+          <p className="text-sm text-black/60">No pending invitations.</p>
+        ) : (
+          <div className="overflow-hidden rounded-3xl border border-black/20 bg-white shadow-[0_30px_80px_-60px_rgba(0,0,0,0.2)]">
+            <table className="w-full text-sm">
+              <thead className="bg-black/5">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-[0.2em] text-black/70">Invitee</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-[0.2em] text-black/70">Role</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-[0.2em] text-black/70">Expires</th>
+                  <th className="px-6 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black/5">
+                {pendingInvitations.map((inv) => (
+                  <tr key={inv.id}>
+                    <td className="px-6 py-4">
+                      <p className="font-semibold text-black">{inv.name || inv.email}</p>
+                      <p className="text-xs text-black/50">{inv.email}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                          inv.org_role === 'therapist' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {ROLE_LABELS[inv.org_role] || inv.org_role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-black/70">{new Date(inv.expires_at).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-right">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        disabled={cancellingId === inv.id}
+                        onClick={() => handleCancelInvitation(inv.id)}
+                      >
+                        {cancellingId === inv.id ? 'Cancelling...' : 'Cancel'}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       <div className="flex gap-2">
         <Chip type="button" active={roleFilter === 'all'} onClick={() => setRoleFilter('all')}>
