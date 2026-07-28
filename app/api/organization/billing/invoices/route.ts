@@ -18,7 +18,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { organizationId: Number(membership.organization_id) };
 }
 
-// GET /api/organization/billing/invoices — paginated invoice history
+// GET /api/organization/billing/invoices: paginated invoice history
 export async function GET(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);

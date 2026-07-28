@@ -32,7 +32,7 @@ interface AvailablePatient {
 }
 
 function calcAge(dob: string | null): string {
-  if (!dob) return '—';
+  if (!dob) return '-';
   const birth = new Date(dob);
   const today = new Date();
   const age = today.getFullYear() - birth.getFullYear();

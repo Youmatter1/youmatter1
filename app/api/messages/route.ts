@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/messages — list conversations for the current user
+// GET /api/messages: list conversations for the current user
 export async function GET(request: Request) {
   try {
     const user = getUserFromRequest(request);
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/messages — start or find a conversation
+// POST /api/messages: start or find a conversation
 // Body: { therapist_id: number }  (called by patients only)
 export async function POST(request: Request) {
   try {
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
     }
 
     // Independent (B2C) patients must have booked a session with this
-    // therapist before messaging them — prevents messaging before paying for
+    // therapist before messaging them: prevents messaging before paying for
     // a session. Org-bound members are exempt (seats already cover access).
     if (!user.organization_id) {
       const sessionCheck = await db.execute({

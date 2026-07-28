@@ -66,7 +66,7 @@ function calcAge(dob: string | null): string {
 }
 
 function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '—';
+  if (!dateStr) return '-';
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   });
@@ -90,7 +90,7 @@ function MetricCard({
     <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
       <p className="text-xs font-medium text-gray-500 mb-2">{label}</p>
       {latest == null ? (
-        <p className="text-2xl font-bold text-gray-400">—</p>
+        <p className="text-2xl font-bold text-gray-400">-</p>
       ) : (
         <p className="text-2xl font-bold text-gray-900">{latest}{unit}</p>
       )}
@@ -551,12 +551,12 @@ export default function StudentFilePage() {
                               <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${entry.wellbeing_score >= 7 ? 'bg-green-50 text-green-700' : entry.wellbeing_score >= 4 ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-600'}`}>
                                 {entry.wellbeing_score}
                               </span>
-                            ) : <span className="text-gray-300">—</span>}
+                            ) : <span className="text-gray-300">-</span>}
                           </td>
-                          <td className="px-4 py-3 text-center text-gray-700">{entry.academic_score != null ? `${entry.academic_score}%` : <span className="text-gray-300">—</span>}</td>
-                          <td className="px-4 py-3 text-center text-gray-700">{entry.attendance_rate != null ? `${entry.attendance_rate}%` : <span className="text-gray-300">—</span>}</td>
-                          <td className="px-4 py-3 text-center text-gray-700">{entry.behavioral_incidents != null ? entry.behavioral_incidents : <span className="text-gray-300">—</span>}</td>
-                          <td className="px-4 py-3 text-gray-600 max-w-xs truncate">{entry.notes || <span className="text-gray-300">—</span>}</td>
+                          <td className="px-4 py-3 text-center text-gray-700">{entry.academic_score != null ? `${entry.academic_score}%` : <span className="text-gray-300">-</span>}</td>
+                          <td className="px-4 py-3 text-center text-gray-700">{entry.attendance_rate != null ? `${entry.attendance_rate}%` : <span className="text-gray-300">-</span>}</td>
+                          <td className="px-4 py-3 text-center text-gray-700">{entry.behavioral_incidents != null ? entry.behavioral_incidents : <span className="text-gray-300">-</span>}</td>
+                          <td className="px-4 py-3 text-gray-600 max-w-xs truncate">{entry.notes || <span className="text-gray-300">-</span>}</td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-1">
                               <button onClick={() => openEditEntry(entry)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">

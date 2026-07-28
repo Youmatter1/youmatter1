@@ -22,7 +22,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { organizationId: Number(membership.organization_id) };
 }
 
-// POST /api/organization/billing/portal — create a Stripe Billing Portal session
+// POST /api/organization/billing/portal: create a Stripe Billing Portal session
 // (payment method updates + Stripe-hosted invoice history as a fallback to /organization/billing/invoices)
 export async function POST(request: Request) {
   try {

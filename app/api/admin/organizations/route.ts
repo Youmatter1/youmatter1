@@ -4,7 +4,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/admin/organizations — list all organizations with member/therapist counts
+// GET /api/admin/organizations: list all organizations with member/therapist counts
 export async function GET(request: Request) {
   try {
     const currentUser = getUserFromRequest(request);

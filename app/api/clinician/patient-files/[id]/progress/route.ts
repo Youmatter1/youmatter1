@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// POST /api/clinician/patient-files/[id]/progress — add a progress entry
+// POST /api/clinician/patient-files/[id]/progress: add a progress entry
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const currentUser = getUserFromRequest(request);

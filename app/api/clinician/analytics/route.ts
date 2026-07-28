@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/clinician/analytics — aggregate progress analytics for all of the therapist's patients
+// GET /api/clinician/analytics: aggregate progress analytics for all of the therapist's patients
 export async function GET(request: Request) {
   try {
     const currentUser = getUserFromRequest(request);

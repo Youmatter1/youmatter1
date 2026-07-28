@@ -7,6 +7,10 @@ import {
   RiLinkedinBoxLine,
 } from "react-icons/ri";
 
+// Contact email: reused from the address already used elsewhere in the
+// codebase (lib/email.ts support link, lib/swagger-standalone.ts contact info).
+const CONTACT_EMAIL = "support@youmatter.com";
+
 const columns = [
   {
     title: "Platform",
@@ -23,6 +27,12 @@ const columns = [
       { name: "Sign In", href: "/login" },
       { name: "Sign Up", href: "/signup" },
       { name: "Find a Therapist", href: "/patient/find-therapist" },
+    ],
+  },
+  {
+    title: "Contact",
+    links: [
+      { name: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
     ],
   },
 ];

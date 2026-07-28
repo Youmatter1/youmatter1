@@ -11,7 +11,7 @@ const valueProps = [
   {
     icon: Building2,
     title: 'Your Own Branded Portal',
-    description: 'Employees sign in through a page that looks and feels like your organization — logo, colors, and all.',
+    description: 'Employees sign in through a page that looks and feels like your organization: logo, colors, and all.',
   },
   {
     icon: Users,
@@ -21,7 +21,7 @@ const valueProps = [
   {
     icon: ShieldCheck,
     title: 'Private & Confidential',
-    description: 'Sessions and records stay between your employees and their therapists — never visible to admins.',
+    description: 'Sessions and records stay between your employees and their therapists: never visible to admins.',
   },
   {
     icon: BarChart2,
@@ -54,7 +54,7 @@ export default function ForOrganizationsPage() {
           Employee Wellness, Simplified
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
-          Give your team access to licensed therapists through a private, branded portal — built for
+          Give your team access to licensed therapists through a private, branded portal, built for
           organizations that take mental health seriously.
         </p>
         <Link href="/signup?role=org_admin">

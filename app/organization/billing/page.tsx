@@ -16,7 +16,7 @@ function formatCents(cents: number): string {
 }
 
 function formatDate(value: string | null): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Date(value).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
@@ -177,7 +177,7 @@ function BillingOverviewContent() {
   const invoiceColumns = [
     { key: 'created_at' as const, header: 'Date', render: (_v: any, row: Invoice) => formatDate(row.created_at) },
     { key: 'amount_paid' as const, header: 'Amount', render: (_v: any, row: Invoice) => formatCents(row.amount_paid) },
-    { key: 'seats_billed' as const, header: 'Seats', render: (_v: any, row: Invoice) => row.seats_billed ?? '—' },
+    { key: 'seats_billed' as const, header: 'Seats', render: (_v: any, row: Invoice) => row.seats_billed ?? '-' },
     { key: 'status' as const, header: 'Status', render: (_v: any, row: Invoice) => <StatusChip status={row.status} /> },
     {
       key: 'invoice_pdf_url' as const,
@@ -188,7 +188,7 @@ function BillingOverviewContent() {
             Download
           </a>
         ) : (
-          '—'
+          '-'
         ),
     },
   ];

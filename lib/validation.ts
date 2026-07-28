@@ -52,7 +52,7 @@ const urlSchema = z.string()
 export const loginSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, 'Password is required'),
-  // When present, the login must belong to exactly this role — lets the
+  // When present, the login must belong to exactly this role: lets the
   // account-type picker on the sign-in screen act as a real boundary rather
   // than a cosmetic label.
   role: z.enum(['patient', 'therapist', 'org_admin']).optional(),

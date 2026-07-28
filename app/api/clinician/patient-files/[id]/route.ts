@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/clinician/patient-files/[id] — full patient file with entries and goals
+// GET /api/clinician/patient-files/[id]: full patient file with entries and goals
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const currentUser = getUserFromRequest(request);
@@ -112,7 +112,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-// PATCH /api/clinician/patient-files/[id] — update diagnoses_notes or treatment_goals
+// PATCH /api/clinician/patient-files/[id]: update diagnoses_notes or treatment_goals
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const currentUser = getUserFromRequest(request);

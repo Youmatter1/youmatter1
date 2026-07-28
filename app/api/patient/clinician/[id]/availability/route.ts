@@ -60,7 +60,7 @@ export async function GET(
       end_time: string;
     }>;
 
-    // If no schedule set, return empty — no fake data
+    // If no schedule set, return empty: no fake data
     if (schedules.length === 0) {
       return NextResponse.json({ success: true, data: [], noSchedule: true });
     }

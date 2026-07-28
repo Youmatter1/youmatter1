@@ -22,7 +22,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { organizationId: Number(membership.organization_id) };
 }
 
-// POST /api/organization/billing/subscription/reactivate — undo a pending cancellation
+// POST /api/organization/billing/subscription/reactivate: undo a pending cancellation
 export async function POST(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);

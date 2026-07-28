@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// PATCH /api/clinician/patient-files/[id]/progress/[entryId] — update a progress entry
+// PATCH /api/clinician/patient-files/[id]/progress/[entryId]: update a progress entry
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; entryId: string }> }
@@ -26,7 +26,7 @@ export async function PATCH(
     const therapistId = Number(therapist.id);
     const { id, entryId } = await params;
 
-    // Verify ownership via JOIN — never trust URL params alone
+    // Verify ownership via JOIN: never trust URL params alone
     const ownerCheck = await db.execute({
       sql: `SELECT pe.id FROM progress_entries pe
             JOIN patient_files pf ON pe.patient_file_id = pf.id
@@ -80,7 +80,7 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/clinician/patient-files/[id]/progress/[entryId] — delete a progress entry
+// DELETE /api/clinician/patient-files/[id]/progress/[entryId]: delete a progress entry
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string; entryId: string }> }

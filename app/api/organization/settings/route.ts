@@ -19,7 +19,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { organizationId: Number(membership.organization_id) };
 }
 
-// GET /api/organization/settings — organization profile
+// GET /api/organization/settings: organization profile
 export async function GET(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
   }
 }
 
-// PUT /api/organization/settings — update organization profile
+// PUT /api/organization/settings: update organization profile
 export async function PUT(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);

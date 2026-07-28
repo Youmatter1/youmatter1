@@ -354,7 +354,7 @@ export const organizationQueries = {
     });
   },
 
-  // Public org directory — deliberately minimal fields only (no billing info,
+  // Public org directory: deliberately minimal fields only (no billing info,
   // member counts, or anything internal).
   getPublicOrganizations: async () => {
     const rs = await client.execute({
@@ -456,7 +456,7 @@ export const organizationQueries = {
 
   // Scoped to organizationId so one org's admin can't cancel another org's
   // invitation by guessing an id. Only cancels if it's still pending
-  // (unaccepted) — a bad token is otherwise harmless to try to delete.
+  // (unaccepted): a bad token is otherwise harmless to try to delete.
   cancelInvitation: async (organizationId: number | string, invitationId: number | string) => {
     const rs = await client.execute({
       sql: `DELETE FROM organization_invitations
@@ -586,7 +586,7 @@ export const organizationQueries = {
   },
 
   // Looks up an invitation by its raw token, joined with the organization it
-  // belongs to — used by the public /invite/accept flow, where the token
+  // belongs to: used by the public /invite/accept flow, where the token
   // itself is the only credential. Only returns invitations that are still
   // valid: not expired, not already accepted, and the org is still active.
   getInvitationByToken: async (token: string) => {
@@ -640,7 +640,7 @@ export const organizationQueries = {
     });
   },
 
-  // Denormalized shortcut (schema part 1e) — set once during invite-accept.
+  // Denormalized shortcut (schema part 1e): set once during invite-accept.
   setUserOrganization: async (userId: number | string, organizationId: number | string) => {
     return await client.execute({
       sql: `UPDATE users SET organization_id = ? WHERE id = ?`,
@@ -960,7 +960,7 @@ export const organizationQueries = {
       const bookmarksWhere = patientOrTherapistWhere('patient_id', 'therapist_id');
       await client.execute({ sql: `DELETE FROM bookmarks WHERE ${bookmarksWhere.where}`, args: bookmarksWhere.args });
 
-      // testimonials — preserve the testimonial text, just detach the author (matches ON DELETE SET NULL intent)
+      // testimonials: preserve the testimonial text, just detach the author (matches ON DELETE SET NULL intent)
       if (patientIds.length > 0) {
         await client.execute({ sql: `UPDATE testimonials SET patient_id = NULL WHERE patient_id IN (${patientPh})`, args: patientIds });
       }

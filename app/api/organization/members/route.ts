@@ -20,7 +20,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { membership, organizationId: Number(membership.organization_id) };
 }
 
-// GET /api/organization/members — paginated member list with session counts
+// GET /api/organization/members: paginated member list with session counts
 export async function GET(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/organization/members — invite a new member by email
+// POST /api/organization/members: invite a new member by email
 export async function POST(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);

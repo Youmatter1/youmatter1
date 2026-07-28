@@ -4,7 +4,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/organization/context — org branding for the org-context banner on
+// GET /api/organization/context: org branding for the org-context banner on
 // the patient/clinician dashboards. Returns { organization: null } for
 // independent (non-org) users rather than an error, since it's fine for a
 // component to call this unconditionally and just hide the banner.

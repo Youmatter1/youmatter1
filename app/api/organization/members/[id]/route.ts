@@ -4,7 +4,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// DELETE /api/organization/members/[id] — remove a member from the organization
+// DELETE /api/organization/members/[id]: remove a member from the organization
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

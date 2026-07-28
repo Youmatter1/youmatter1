@@ -93,7 +93,7 @@ export async function authenticateUser(email: string, password: string) {
       : 'patient';
 
     // Resolve org context (organization_id + org_role) for org-bound users.
-    // Covers org_admins too, not just invite-accepted therapists/members —
+    // Covers org_admins too, not just invite-accepted therapists/members:
     // org_admins don't get users.organization_id set, but do have an
     // organization_members row, so the membership lookup catches both cases.
     // Independent users have no membership row, so both stay null.

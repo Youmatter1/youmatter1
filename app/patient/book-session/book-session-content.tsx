@@ -125,14 +125,14 @@ export default function BookSessionContent() {
       return;
     }
 
-    // Org-covered sessions skip payment entirely — the organization already
+    // Org-covered sessions skip payment entirely: the organization already
     // pays for this via seats/subscription, so book directly.
     if (isOrgBound) {
       bookSession();
       return;
     }
 
-    // Independent (B2C) sessions require payment first — session is only
+    // Independent (B2C) sessions require payment first: session is only
     // created after successful payment.
     setShowPaymentModal(true);
   };

@@ -9,7 +9,7 @@
  *
  * Bypasses third-party-relay DKIM/DMARC alignment issues entirely, since
  * Google itself sends and signs the mail as its own domain. Only real
- * caveat is Gmail's own per-account sending caps (~500/day) — hence the
+ * caveat is Gmail's own per-account sending caps (~500/day): hence the
  * failover across accounts below.
  */
 
@@ -176,7 +176,7 @@ async function sendViaGmail(payload: {
 //   }
 // }
 
-// Email templates (provider-agnostic — just {subject, html})
+// Email templates (provider-agnostic: just {subject, html})
 export const emailTemplates = {
   confirmation: (data: {
     patientName: string;
@@ -760,7 +760,7 @@ export async function sendtherapistApprovalEmail(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>You're Approved — Welcome to You Matter!</h1>
+          <h1>You're Approved: Welcome to You Matter!</h1>
         </div>
         <div class="content">
           <p>Dear ${data.therapistName},</p>

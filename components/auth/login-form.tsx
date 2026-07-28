@@ -56,7 +56,7 @@ export function LoginForm({ preSelectedRole }: LoginFormProps = {}) {
     setLocalError(null);
 
     try {
-      // The picked card is enforced server-side as a real boundary — logging in
+      // The picked card is enforced server-side as a real boundary: logging in
       // with the wrong account type is rejected rather than silently redirected.
       // Staff sign-in skips that check entirely (there's no public "Admin" card).
       await login(email, password, isStaffMode ? undefined : selectedRole ?? undefined);

@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// PATCH /api/clinician/patient-files/[id]/goals/[goalId] — update goal text, status, or target_date
+// PATCH /api/clinician/patient-files/[id]/goals/[goalId]: update goal text, status, or target_date
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; goalId: string }> }

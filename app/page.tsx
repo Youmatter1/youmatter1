@@ -337,7 +337,7 @@ export default function LandingPage() {
             </div>
           ) : therapists.length === 0 ? (
             <div className="rounded-2xl border border-gray-200 bg-gray-50 py-16 text-center">
-              <p className="text-gray-600">New therapists are joining every week — check back soon.</p>
+              <p className="text-gray-600">New therapists are joining every week: check back soon.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -401,7 +401,7 @@ export default function LandingPage() {
               {
                 icon: MessageCircle,
                 title: 'Multiple Formats',
-                description: 'Video, chat, or phone sessions—whatever works for you.',
+                description: 'Video, chat, or phone sessions: whatever works for you.',
               },
               {
                 icon: Phone,

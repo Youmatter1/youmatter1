@@ -10,7 +10,7 @@ function formatCents(cents: number): string {
 }
 
 function formatDate(value: string | null): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Date(value).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
@@ -63,7 +63,7 @@ export default function OrganizationInvoicesPage() {
   const columns = [
     { key: 'created_at' as const, header: 'Date', render: (_v: any, row: Invoice) => formatDate(row.created_at) },
     { key: 'amount_paid' as const, header: 'Amount', render: (_v: any, row: Invoice) => formatCents(row.amount_paid) },
-    { key: 'seats_billed' as const, header: 'Seats Billed', render: (_v: any, row: Invoice) => row.seats_billed ?? '—' },
+    { key: 'seats_billed' as const, header: 'Seats Billed', render: (_v: any, row: Invoice) => row.seats_billed ?? '-' },
     {
       key: 'period_start' as const,
       header: 'Period',
@@ -79,7 +79,7 @@ export default function OrganizationInvoicesPage() {
             Download
           </a>
         ) : (
-          '—'
+          '-'
         ),
     },
   ];

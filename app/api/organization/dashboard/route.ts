@@ -4,7 +4,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/organization/dashboard — aggregated stats for the org_admin's dashboard
+// GET /api/organization/dashboard: aggregated stats for the org_admin's dashboard
 export async function GET(request: Request) {
   try {
     const currentUser = getUserFromRequest(request);

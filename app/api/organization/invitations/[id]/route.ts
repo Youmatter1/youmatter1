@@ -4,7 +4,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// DELETE /api/organization/invitations/[id] — cancel a pending invitation so
+// DELETE /api/organization/invitations/[id]: cancel a pending invitation so
 // the same email can be re-invited (e.g. after a broken link, wrong role, etc).
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

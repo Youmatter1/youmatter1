@@ -709,7 +709,7 @@ export function SignupForm({ preSelectedRole }: SignupFormProps = {}) {
                 placeholder="acme.com"
                 className="border-gray-300 focus:border-gray-800 focus:ring-gray-300"
               />
-              <p className="text-xs text-gray-500">Optional — helps us match employees who sign up with a company email.</p>
+              <p className="text-xs text-gray-500">Optional: helps us match employees who sign up with a company email.</p>
             </div>
             <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-xs text-gray-600">
               This email will be the organization's first admin. You'll be able to invite your team and manage seats from your dashboard right after signing up.

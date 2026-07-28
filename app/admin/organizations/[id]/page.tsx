@@ -132,7 +132,7 @@ function MemberTable({ members }: { members: OrgMember[] }) {
         <tbody className="divide-y divide-gray-100">
           {members.map((m) => (
             <tr key={m.membership_id}>
-              <td className="px-4 py-2.5 text-gray-900 font-medium">{m.full_name || '—'}</td>
+              <td className="px-4 py-2.5 text-gray-900 font-medium">{m.full_name || '-'}</td>
               <td className="px-4 py-2.5 text-gray-600">{m.email}</td>
               <td className="px-4 py-2.5">
                 <span
@@ -144,7 +144,7 @@ function MemberTable({ members }: { members: OrgMember[] }) {
                 </span>
               </td>
               <td className="px-4 py-2.5 text-gray-500">
-                {m.joined_at ? new Date(m.joined_at).toLocaleDateString() : '—'}
+                {m.joined_at ? new Date(m.joined_at).toLocaleDateString() : '-'}
               </td>
             </tr>
           ))}

@@ -1,6 +1,6 @@
 // Subscription plan configuration for organization (B2B) billing.
 // Prices are per-seat, in cents. Annual price is the amount billed once per
-// year per seat (≈10 months' worth of the monthly rate — a 17% discount).
+// year per seat (≈10 months' worth of the monthly rate, a 17% discount).
 
 export type PlanTier = 'starter' | 'growth' | 'enterprise';
 export type BillingCycle = 'monthly' | 'annual';

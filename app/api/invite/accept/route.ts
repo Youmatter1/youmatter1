@@ -24,7 +24,7 @@ async function generateUniqueUsername(name: string): Promise<string> {
   return `${base}${Date.now().toString().slice(-6)}`;
 }
 
-// POST /api/invite/accept — public; the token is the credential. Creates the
+// POST /api/invite/accept: public; the token is the credential. Creates the
 // user + role-specific profile + organization_members row, then logs them in.
 export async function POST(request: Request) {
   try {
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
         null,
         null
       );
-      // Org-invited therapists are vouched for by the org_admin — skip the
+      // Org-invited therapists are vouched for by the org_admin: skip the
       // platform admin approval queue that independent therapist signups go through.
       await db.execute({
         sql: `UPDATE therapists SET is_verified = 1, verification_status = 'approved' WHERE user_id = ?`,

@@ -24,7 +24,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { membership, organizationId: Number(membership.organization_id) };
 }
 
-// GET /api/organization/billing/subscription — current subscription + seat usage
+// GET /api/organization/billing/subscription: current subscription + seat usage
 export async function GET(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
   }
 }
 
-// PUT /api/organization/billing/subscription — change seat count within the same plan
+// PUT /api/organization/billing/subscription: change seat count within the same plan
 export async function PUT(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);

@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 const TREND_WINDOW_DAYS = 84; // 12 weeks
 
-// GET /api/organization/analytics — anonymized usage trends (counts only, no member names)
+// GET /api/organization/analytics: anonymized usage trends (counts only, no member names)
 export async function GET(request: Request) {
   try {
     const currentUser = getUserFromRequest(request);

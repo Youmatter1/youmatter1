@@ -4,7 +4,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/admin/organizations/[id] — organization detail + full member list
+// GET /api/admin/organizations/[id]: organization detail + full member list
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const currentUser = getUserFromRequest(request);
@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-// DELETE /api/admin/organizations/[id] — permanently deletes the organization
+// DELETE /api/admin/organizations/[id]: permanently deletes the organization
 // and everything tied to it (members, invitations, org-bound therapist/member
 // accounts, their sessions, messages, files). Irreversible.
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {

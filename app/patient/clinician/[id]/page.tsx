@@ -142,7 +142,7 @@ export default function TherapistProfilePage() {
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Left — Main profile info */}
+          {/* Left: Main profile info */}
           <div className="lg:col-span-2 space-y-6">
 
             {/* Header card */}
@@ -266,7 +266,7 @@ export default function TherapistProfilePage() {
             )}
           </div>
 
-          {/* Right — Booking sidebar */}
+          {/* Right: Booking sidebar */}
           <div className="space-y-6">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sticky top-24">
               {!user?.organization_id && (

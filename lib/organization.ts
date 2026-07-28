@@ -55,7 +55,7 @@ export async function inviteOrganizationMember(
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const acceptLink = `${appUrl}/invite/accept?token=${token}`;
 
-  // Best-effort — an invite row already exists even if the email fails to send;
+  // Best-effort: an invite row already exists even if the email fails to send;
   // the org_admin can see it's pending in their dashboard either way.
   try {
     await sendEmail(

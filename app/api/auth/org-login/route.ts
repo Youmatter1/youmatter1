@@ -4,9 +4,9 @@ import { userQueries, organizationQueries, activityQueries } from '@/lib/db';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import { validateRequest, orgLoginSchema } from '@/lib/validation';
 
-// POST /api/auth/org-login — email + password + org slug. Unlike the main
+// POST /api/auth/org-login: email + password + org slug. Unlike the main
 // login, this also requires the account to actually be a member of the org
-// named by `slug` — otherwise it's rejected even if the credentials are valid.
+// named by `slug`: otherwise it's rejected even if the credentials are valid.
 export async function POST(request: Request) {
   try {
     const clientIp = getClientIp(request);

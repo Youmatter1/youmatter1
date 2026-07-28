@@ -250,7 +250,7 @@ export default function AnalyticsPage() {
             <>
               {/* Monthly Trend Chart */}
               <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
-                <h2 className="text-base font-bold text-gray-900 mb-1">Monthly Average Progress — All Students</h2>
+                <h2 className="text-base font-bold text-gray-900 mb-1">Monthly Average Progress: All Students</h2>
                 <p className="text-xs text-gray-500 mb-5">Average metrics across all students per month</p>
                 {!hasEntries ? (
                   <div className="flex items-center justify-center h-32">
@@ -276,7 +276,7 @@ export default function AnalyticsPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Before / After Academic Chart */}
                 <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
-                  <h2 className="text-base font-bold text-gray-900 mb-1">Academic Score — Baseline vs Latest</h2>
+                  <h2 className="text-base font-bold text-gray-900 mb-1">Academic Score: Baseline vs Latest</h2>
                   <p className="text-xs text-gray-500 mb-5">Per-student first entry vs most recent entry</p>
                   {beforeAfterData.length === 0 ? (
                     <div className="flex items-center justify-center h-48">
@@ -387,23 +387,23 @@ export default function AnalyticsPage() {
                                 {s.name}
                               </Link>
                             </td>
-                            <td className="px-4 py-3 text-center text-gray-600">{s.firstWellbeing ?? '—'}</td>
-                            <td className="px-4 py-3 text-center text-gray-600">{s.latestWellbeing ?? '—'}</td>
+                            <td className="px-4 py-3 text-center text-gray-600">{s.firstWellbeing ?? '-'}</td>
+                            <td className="px-4 py-3 text-center text-gray-600">{s.latestWellbeing ?? '-'}</td>
                             <td className="px-4 py-3 text-center">
                               {wDiff != null ? (
                                 <span className={`text-xs font-semibold ${wDiff > 0 ? 'text-green-600' : wDiff < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                                   {wDiff > 0 ? '+' : ''}{wDiff}
                                 </span>
-                              ) : '—'}
+                              ) : '-'}
                             </td>
-                            <td className="px-4 py-3 text-center text-gray-600">{s.firstAcademic != null ? `${s.firstAcademic}%` : '—'}</td>
-                            <td className="px-4 py-3 text-center text-gray-600">{s.latestAcademic != null ? `${s.latestAcademic}%` : '—'}</td>
+                            <td className="px-4 py-3 text-center text-gray-600">{s.firstAcademic != null ? `${s.firstAcademic}%` : '-'}</td>
+                            <td className="px-4 py-3 text-center text-gray-600">{s.latestAcademic != null ? `${s.latestAcademic}%` : '-'}</td>
                             <td className="px-4 py-3 text-center">
                               {aDiff != null ? (
                                 <span className={`text-xs font-semibold ${aDiff > 0 ? 'text-green-600' : aDiff < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                                   {aDiff > 0 ? '+' : ''}{Math.round(aDiff * 10) / 10}%
                                 </span>
-                              ) : '—'}
+                              ) : '-'}
                             </td>
                           </tr>
                         );

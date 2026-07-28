@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle, Circle } from 'lucide-react';
 
-// Only ever navigate to an in-app relative path — the redirect value came
+// Only ever navigate to an in-app relative path: the redirect value came
 // through a URL query string, so treat it as untrusted.
 function sanitizeRedirect(redirect: string | null): string {
   if (!redirect) return '/login';

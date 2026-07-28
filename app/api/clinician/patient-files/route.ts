@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/clinician/patient-files — list all patient files for the authed therapist
+// GET /api/clinician/patient-files: list all patient files for the authed therapist
 export async function GET(request: Request) {
   try {
     const currentUser = getUserFromRequest(request);
@@ -120,7 +120,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/clinician/patient-files — create a new patient file
+// POST /api/clinician/patient-files: create a new patient file
 export async function POST(request: Request) {
   try {
     const currentUser = getUserFromRequest(request);

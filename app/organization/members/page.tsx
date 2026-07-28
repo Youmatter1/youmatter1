@@ -204,7 +204,7 @@ export default function OrganizationMembersPage() {
       key: 'last_session_date' as const,
       header: 'Last Session',
       render: (_value: any, row: OrgMember) =>
-        row.last_session_date ? new Date(row.last_session_date).toLocaleDateString() : '—',
+        row.last_session_date ? new Date(row.last_session_date).toLocaleDateString() : '-',
     },
     {
       key: 'membership_id' as const,
@@ -276,7 +276,7 @@ export default function OrganizationMembersPage() {
           </div>
           {inviteRole === 'therapist' ? (
             <p className="mt-2 text-xs text-black/50">
-              Therapist invites skip the standard credential review — the organization vouches for this
+              Therapist invites skip the standard credential review: the organization vouches for this
               professional. They&apos;ll add their specialization and license details when they accept.
             </p>
           ) : null}

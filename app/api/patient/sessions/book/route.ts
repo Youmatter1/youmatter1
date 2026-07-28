@@ -103,7 +103,7 @@ export async function POST(request: Request) {
       ],
     });
 
-    // lastInsertRowid is BigInt — convert to Number for JSON serialization
+    // lastInsertRowid is BigInt: convert to Number for JSON serialization
     const sessionId = Number(result.lastInsertRowid);
 
     return NextResponse.json({

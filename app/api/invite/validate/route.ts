@@ -3,7 +3,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/invite/validate?token=... — public; the token itself is the credential.
+// GET /api/invite/validate?token=...: public; the token itself is the credential.
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

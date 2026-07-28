@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
       const roleHome = redirectMap[data.user.role as keyof typeof redirectMap] || '/';
 
-      // Only honor a ?redirect= param if it actually belongs to this role's area —
+      // Only honor a ?redirect= param if it actually belongs to this role's area:
       // otherwise a stale param from a previous session (e.g. someone else's link,
       // or a leftover ?redirect=/organization from testing a different account)
       // would silently send this user into the wrong dashboard.

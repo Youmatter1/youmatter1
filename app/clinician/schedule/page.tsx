@@ -183,7 +183,7 @@ export default function ClinicianSchedulePage() {
             <h1 className="text-xl font-bold text-gray-900">My Availability</h1>
             <p className="text-sm text-gray-500">
               {enabledCount === 0
-                ? 'No days set — patients cannot book yet'
+                ? 'No days set: patients cannot book yet'
                 : `Available ${enabledCount} day${enabledCount > 1 ? 's' : ''} per week`}
             </p>
           </div>

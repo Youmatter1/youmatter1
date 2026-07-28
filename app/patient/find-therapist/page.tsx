@@ -220,7 +220,7 @@ export default function FindTherapistPage() {
             <div className="rounded-xl bg-white border border-gray-200 p-6 sticky top-28 space-y-6">
               <h2 className="font-bold text-gray-900">Filters</h2>
 
-              {/* Price Range — not relevant for org-covered sessions */}
+              {/* Price Range: not relevant for org-covered sessions */}
               {!isOrgBound && (
                 <div>
                   <label className="text-sm font-semibold text-gray-900 block mb-3">

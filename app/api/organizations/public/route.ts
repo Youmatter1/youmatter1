@@ -3,7 +3,7 @@ import { organizationQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/organizations/public — minimal public directory of active
+// GET /api/organizations/public: minimal public directory of active
 // organizations. No auth, no billing/member counts, no internal fields.
 export async function GET() {
   try {

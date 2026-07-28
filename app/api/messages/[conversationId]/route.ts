@@ -33,7 +33,7 @@ async function getConversationAndVerify(conversationId: number, user: { userId: 
   return conv;
 }
 
-// GET /api/messages/[conversationId] — fetch messages + mark incoming as read
+// GET /api/messages/[conversationId]: fetch messages + mark incoming as read
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ conversationId: string }> }
@@ -70,7 +70,7 @@ export async function GET(
   }
 }
 
-// POST /api/messages/[conversationId] — send a message
+// POST /api/messages/[conversationId]: send a message
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ conversationId: string }> }

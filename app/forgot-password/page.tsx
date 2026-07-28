@@ -12,7 +12,7 @@ import { ArrowLeft, CheckCircle } from 'lucide-react';
 
 function ForgotPasswordContent() {
   const searchParams = useSearchParams();
-  // Where "back to login" / the emailed reset link should return to — lets
+  // Where "back to login" / the emailed reset link should return to: lets
   // org-bound users end up back on their own branded /org/[slug]/login
   // instead of the generic one.
   const redirect = searchParams.get('redirect');

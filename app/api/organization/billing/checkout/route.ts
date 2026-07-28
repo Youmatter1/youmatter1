@@ -24,7 +24,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { membership, organizationId: Number(membership.organization_id) };
 }
 
-// POST /api/organization/billing/checkout — create a Stripe Checkout Session for a new subscription
+// POST /api/organization/billing/checkout: create a Stripe Checkout Session for a new subscription
 export async function POST(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `You Matter — ${plan.name} Plan`,
+              name: `You Matter: ${plan.name} Plan`,
               description: plan.description,
             },
             unit_amount: pricePerSeat,

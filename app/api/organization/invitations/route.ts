@@ -20,7 +20,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { membership, organizationId: Number(membership.organization_id) };
 }
 
-// GET /api/organization/invitations — list pending invitations
+// GET /api/organization/invitations: list pending invitations
 export async function GET(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/organization/invitations — create an invitation (generates a token, stores the row;
+// POST /api/organization/invitations: create an invitation (generates a token, stores the row;
 // sending the email and the accept-invite endpoint are not implemented yet)
 export async function POST(request: Request) {
   try {

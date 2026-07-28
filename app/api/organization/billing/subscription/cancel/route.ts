@@ -22,7 +22,7 @@ async function resolveOrgAdminMembership(request: Request) {
   return { organizationId: Number(membership.organization_id) };
 }
 
-// POST /api/organization/billing/subscription/cancel — cancel at the end of the current period
+// POST /api/organization/billing/subscription/cancel: cancel at the end of the current period
 export async function POST(request: Request) {
   try {
     const resolved = await resolveOrgAdminMembership(request);
