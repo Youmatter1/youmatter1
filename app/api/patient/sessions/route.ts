@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
 
     let query = `
-      SELECT 
+      SELECT
         s.id,
         s.scheduled_date,
         s.scheduled_time,
@@ -41,10 +41,12 @@ export async function GET(request: Request) {
         s.meeting_link,
         s.notes,
         t.full_name as therapist_name,
-        u.email as therapist_email
+        u.email as therapist_email,
+        CASE WHEN sf.id IS NOT NULL THEN 1 ELSE 0 END as has_feedback
       FROM sessions s
       JOIN therapists t ON s.therapist_id = t.id
       JOIN users u ON t.user_id = u.id
+      LEFT JOIN session_feedback sf ON sf.session_id = s.id
       WHERE s.patient_id = ?
     `;
 

@@ -28,13 +28,14 @@ export default function BookSessionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const therapistId = searchParams.get('therapist_id');
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const [therapist, settherapist] = useState<therapist | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSubscription, setHasSubscription] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -84,6 +85,19 @@ export default function BookSessionContent() {
   };
 
   const isOrgBound = Boolean(user?.organization_id);
+  // Covered by subscription (independent patients on the free promo tier, or
+  // any future paid plan) or by the organization's seats (org-bound members).
+  const isCovered = isOrgBound || hasSubscription;
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/patient/subscription', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setHasSubscription(!!data.data && data.data.status === 'active'))
+      .catch(() => setHasSubscription(false));
+  }, [token]);
 
   const bookSession = async (paymentIntentId?: string) => {
     setSubmitting(true);
@@ -125,14 +139,14 @@ export default function BookSessionContent() {
       return;
     }
 
-    // Org-covered sessions skip payment entirely: the organization already
-    // pays for this via seats/subscription, so book directly.
-    if (isOrgBound) {
+    // Org-covered (seats) or subscription-covered (free promo tier, or any
+    // future paid plan) sessions skip payment entirely and book directly.
+    if (isCovered) {
       bookSession();
       return;
     }
 
-    // Independent (B2C) sessions require payment first: session is only
+    // Fallback: no active subscription and not org-bound. Session is only
     // created after successful payment.
     setShowPaymentModal(true);
   };
@@ -361,15 +375,19 @@ export default function BookSessionContent() {
           {!isOrgBound && (
             <div className="pt-4">
               <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Total Price</p>
-              <p className="text-2xl font-bold text-black">
-                {formatPrice(therapist.consultation_fee, therapist.session_price)}
-              </p>
+              {hasSubscription ? (
+                <p className="text-sm font-semibold text-green-600">Covered by your subscription</p>
+              ) : (
+                <p className="text-2xl font-bold text-black">
+                  {formatPrice(therapist.consultation_fee, therapist.session_price)}
+                </p>
+              )}
             </div>
           )}
         </div>
       </div>
 
-      {therapist && !isOrgBound && (
+      {therapist && !isCovered && (
         <BookingPaymentModal
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}

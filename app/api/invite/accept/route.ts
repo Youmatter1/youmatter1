@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hashPassword, generateToken } from '@/lib/auth';
-import { userQueries, patientQueries, therapistQueries, organizationQueries } from '@/lib/db';
+import { userQueries, patientQueries, therapistQueries, organizationQueries, subscriptionQueries } from '@/lib/db';
 import db from '@/lib/db';
 import { validateRequest, acceptInviteSchema } from '@/lib/validation';
 
@@ -100,6 +100,9 @@ export async function POST(request: Request) {
     } else {
       const username = await generateUniqueUsername(name);
       await patientQueries.createPatient(userId, username, name, null, null, null, null);
+      // Auto-enroll in the free promo subscription tier (migration 008),
+      // same as independent (B2C) patient signup.
+      await subscriptionQueries.createFreePromoSubscription(userId);
     }
 
     // 3. Link them into the org and close out the invitation

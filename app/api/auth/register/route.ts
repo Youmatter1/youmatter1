@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hashPassword, generateToken } from '@/lib/auth';
-import { userQueries, patientQueries, therapistQueries, organizationQueries } from '@/lib/db';
+import { userQueries, patientQueries, therapistQueries, organizationQueries, subscriptionQueries } from '@/lib/db';
 import db from '@/lib/db';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import { validateRequest, registerSchema } from '@/lib/validation';
@@ -132,6 +132,8 @@ export async function POST(request: Request) {
         phone || null,
         null
       );
+      // Auto-enroll in the free promo subscription tier (migration 008).
+      await subscriptionQueries.createFreePromoSubscription(userId);
     } else if (role === 'therapist' && therapistPayload) {
       await therapistQueries.createTherapist(
         userId,

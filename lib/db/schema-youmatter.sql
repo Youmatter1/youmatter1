@@ -330,3 +330,46 @@ CREATE INDEX idx_org_invitations_org ON organization_invitations(organization_id
 CREATE INDEX idx_org_invitations_email ON organization_invitations(email);
 CREATE INDEX idx_sessions_organization ON sessions(organization_id);
 CREATE INDEX idx_users_organization ON users(organization_id);
+
+-- Patient subscriptions (migration 008). Monthly subscription model,
+-- currently a promotional free tier; built so flipping to a paid plan later
+-- is a config/data change, not a rewrite.
+CREATE TABLE IF NOT EXISTS patient_subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    plan_name TEXT NOT NULL DEFAULT 'free_promo',
+    price INTEGER NOT NULL DEFAULT 0,
+    currency TEXT NOT NULL DEFAULT 'RWF',
+    billing_cycle TEXT NOT NULL DEFAULT 'monthly',
+    status TEXT NOT NULL CHECK(status IN ('active', 'canceled', 'expired')) DEFAULT 'active',
+    promo_label TEXT DEFAULT 'Early Access - Free',
+    started_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    expires_at TEXT,
+    canceled_at TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_patient_subscriptions_user ON patient_subscriptions(user_id);
+CREATE INDEX idx_patient_subscriptions_status ON patient_subscriptions(status);
+
+-- Session feedback (migration 009). One row per session (UNIQUE session_id).
+-- patient_id/therapist_id reference users(id) directly, not patients/therapists.
+CREATE TABLE IF NOT EXISTS session_feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER NOT NULL UNIQUE,
+    patient_id INTEGER NOT NULL,
+    therapist_id INTEGER NOT NULL,
+    organization_id INTEGER REFERENCES organizations(id) DEFAULT NULL,
+    rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+    comment TEXT,
+    would_recommend BOOLEAN,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (therapist_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_session_feedback_therapist ON session_feedback(therapist_id);
+CREATE INDEX idx_session_feedback_organization ON session_feedback(organization_id);

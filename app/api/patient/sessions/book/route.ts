@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getUserFromRequest, assertSameOrg } from '@/lib/auth';
+import { hasActiveSubscription } from '@/lib/subscription';
 import db from '@/lib/db';
 
 interface BookSessionRequest {
@@ -24,6 +25,20 @@ export async function POST(request: Request) {
 
     if (!therapist_id || !scheduled_date || !scheduled_time) {
       return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Subscription gate (migration 008): everyone is on the free promo tier
+    // right now, so this always passes, but the check is in place so that
+    // flipping to a paid plan later doesn't require touching this route again.
+    const subscribed = await hasActiveSubscription(user.userId);
+    if (!subscribed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "You need an active subscription to book sessions. You're currently on our free Early Access plan!",
+        },
+        { status: 403 }
+      );
     }
 
     // Get patient record

@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Video, Phone, MessageSquare, ChevronLeft, User } from 'lucide-react';
+import { Calendar, Clock, Video, Phone, MessageSquare, ChevronLeft, User, Star } from 'lucide-react';
 
 interface Session {
   id: number;
@@ -19,6 +19,9 @@ interface Session {
   patient_username: string;
   patient_picture: string | null;
   jitsi_room_id: string | null;
+  feedback_rating: number | null;
+  feedback_comment: string | null;
+  feedback_would_recommend: number | null;
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -205,6 +208,29 @@ export default function ClinicianSessionsPage() {
 
                     {session.notes && editingNotes !== session.id && (
                       <p className="mt-2 text-sm text-gray-500 italic">&ldquo;{session.notes}&rdquo;</p>
+                    )}
+
+                    {session.status === 'completed' && session.feedback_rating != null && (
+                      <div className="mt-3 rounded-xl bg-yellow-50 border border-yellow-100 p-3">
+                        <div className="flex items-center gap-1 mb-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-3.5 h-3.5 ${
+                                star <= session.feedback_rating! ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                          {session.feedback_would_recommend != null && (
+                            <span className="ml-2 text-xs font-medium text-gray-500">
+                              {session.feedback_would_recommend ? 'Would recommend' : 'Would not recommend'}
+                            </span>
+                          )}
+                        </div>
+                        {session.feedback_comment && (
+                          <p className="text-sm text-gray-600 italic">&ldquo;{session.feedback_comment}&rdquo;</p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

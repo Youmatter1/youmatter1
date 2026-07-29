@@ -232,6 +232,12 @@ export const checkoutSchema = z.object({
   seats: z.number().int().min(1, 'At least 1 seat is required').max(100000),
 });
 
+export const sessionFeedbackSchema = z.object({
+  rating: z.number().int().min(1, 'Rating must be at least 1').max(5, 'Rating must not exceed 5'),
+  comment: z.string().max(500, 'Comment must not exceed 500 characters').optional(),
+  would_recommend: z.boolean().optional(),
+});
+
 export const updateSeatsSchema = z.object({
   seats: z.number().int().min(1, 'At least 1 seat is required').max(100000),
 });

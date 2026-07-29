@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
-  Home, Calendar, MessageSquare, Clock, User, LogOut, Settings, Video, Users, CheckCircle, BarChart2,
+  Home, Calendar, MessageSquare, Clock, User, LogOut, Settings, Video, Users, CheckCircle, BarChart2, Star,
 } from 'lucide-react';
 import { OrgContextBanner } from '@/components/dashboard/org-context-banner';
 
@@ -40,6 +40,11 @@ interface DashboardData {
     cancelledSessions: number;
     activePatients: number;
     todaysSessions: number;
+  };
+  feedback: {
+    averageRating: number;
+    totalReviews: number;
+    recommendPercent: number | null;
   };
   todaySessions: Session[];
   upcomingSessions: Session[];
@@ -179,12 +184,18 @@ export default function ClinicianDashboardPage() {
 
         <div className="p-8 space-y-8">
           {/* Stats Row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {[
               { label: 'Total Sessions', value: stats?.totalSessions ?? 0, icon: BarChart2, color: 'text-green-600 bg-green-50' },
               { label: 'Scheduled', value: stats?.scheduledSessions ?? 0, icon: Calendar, color: 'text-blue-600 bg-blue-50' },
               { label: 'Completed', value: stats?.completedSessions ?? 0, icon: CheckCircle, color: 'text-green-600 bg-green-50' },
               { label: 'Active Patients', value: stats?.activePatients ?? 0, icon: Users, color: 'text-purple-600 bg-purple-50' },
+              {
+                label: data?.feedback?.totalReviews ? `Avg Rating (${data.feedback.totalReviews})` : 'Avg Rating',
+                value: data?.feedback?.averageRating ? data.feedback.averageRating.toFixed(1) : 'N/A',
+                icon: Star,
+                color: 'text-yellow-600 bg-yellow-50',
+              },
             ].map((stat) => {
               const Icon = stat.icon;
               return (

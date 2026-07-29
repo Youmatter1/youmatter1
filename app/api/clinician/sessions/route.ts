@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     }
 
     const sessionsRes = await db.execute({
-      sql: `SELECT 
+      sql: `SELECT
               s.id,
               s.scheduled_date,
               s.scheduled_time,
@@ -52,9 +52,13 @@ export async function GET(request: Request) {
               s.notes,
               p.full_name as patient_name,
               p.username as patient_username,
-              p.profile_picture as patient_picture
+              p.profile_picture as patient_picture,
+              sf.rating as feedback_rating,
+              sf.comment as feedback_comment,
+              sf.would_recommend as feedback_would_recommend
             FROM sessions s
             JOIN patients p ON s.patient_id = p.id
+            LEFT JOIN session_feedback sf ON sf.session_id = s.id
             WHERE s.therapist_id = ?
             ORDER BY s.scheduled_date ASC, s.scheduled_time ASC`,
       args: [therapist.id],

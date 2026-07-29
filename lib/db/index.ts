@@ -994,6 +994,97 @@ export const organizationQueries = {
   },
 };
 
+// --- Patient Subscription Queries (migration 008) ---
+export const subscriptionQueries = {
+  // Auto-created for every new patient (independent or org-bound) at signup.
+  // Currently always the free promo tier; flipping to a paid plan later just
+  // means changing plan_name/price/promo_label here, not the call sites.
+  createFreePromoSubscription: async (userId: number | string) => {
+    return await client.execute({
+      sql: `INSERT INTO patient_subscriptions
+              (user_id, plan_name, price, currency, billing_cycle, status, promo_label)
+            VALUES (?, 'free_promo', 0, 'RWF', 'monthly', 'active', 'Early Access - Free')`,
+      args: [userId]
+    });
+  },
+
+  getActiveByUserId: async (userId: number | string) => {
+    const rs = await client.execute({
+      sql: `SELECT * FROM patient_subscriptions WHERE user_id = ? AND status = 'active' ORDER BY id DESC LIMIT 1`,
+      args: [userId]
+    });
+    return rs.rows[0];
+  },
+
+  getByUserId: async (userId: number | string) => {
+    const rs = await client.execute({
+      sql: `SELECT * FROM patient_subscriptions WHERE user_id = ? ORDER BY id DESC LIMIT 1`,
+      args: [userId]
+    });
+    return rs.rows[0];
+  },
+};
+
+// --- Session Feedback Queries (migration 009) ---
+export const feedbackQueries = {
+  getBySessionId: async (sessionId: number | string) => {
+    const rs = await client.execute({
+      sql: 'SELECT * FROM session_feedback WHERE session_id = ?',
+      args: [sessionId]
+    });
+    return rs.rows[0];
+  },
+
+  createFeedback: async (
+    sessionId: number | string,
+    patientUserId: number | string,
+    therapistUserId: number | string,
+    organizationId: number | string | null,
+    rating: number,
+    comment: string | null,
+    wouldRecommend: boolean | null
+  ) => {
+    return await client.execute({
+      sql: `INSERT INTO session_feedback
+              (session_id, patient_id, therapist_id, organization_id, rating, comment, would_recommend)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [sessionId, patientUserId, therapistUserId, organizationId, rating, comment, wouldRecommend === null ? null : (wouldRecommend ? 1 : 0)]
+    });
+  },
+
+  // Aggregate stats for a therapist's clinician dashboard: average rating,
+  // total review count, and recommendation percentage.
+  getAggregateForTherapist: async (therapistUserId: number | string) => {
+    const rs = await client.execute({
+      sql: `SELECT
+              COUNT(*) as total_reviews,
+              AVG(rating) as average_rating,
+              SUM(CASE WHEN would_recommend = 1 THEN 1 ELSE 0 END) as recommend_count,
+              SUM(CASE WHEN would_recommend IS NOT NULL THEN 1 ELSE 0 END) as recommend_responses
+            FROM session_feedback
+            WHERE therapist_id = ?`,
+      args: [therapistUserId]
+    });
+    return rs.rows[0];
+  },
+
+  // Anonymized aggregate stats for an org admin's analytics page: numbers
+  // only, never individual patient names or comments.
+  getAggregateForOrganization: async (organizationId: number | string) => {
+    const rs = await client.execute({
+      sql: `SELECT
+              COUNT(*) as total_reviews,
+              AVG(rating) as average_rating,
+              SUM(CASE WHEN would_recommend = 1 THEN 1 ELSE 0 END) as recommend_count,
+              SUM(CASE WHEN would_recommend IS NOT NULL THEN 1 ELSE 0 END) as recommend_responses
+            FROM session_feedback
+            WHERE organization_id = ?`,
+      args: [organizationId]
+    });
+    return rs.rows[0];
+  },
+};
+
 export async function initializeDatabase() {
   console.warn("initializeDatabase called - manual migration recommended for Turso/LibSQL");
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getUserFromRequest, hasRole } from '@/lib/auth';
-import { organizationQueries } from '@/lib/db';
+import { organizationQueries, feedbackQueries } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,13 +20,26 @@ export async function GET(request: Request) {
     }
     const organizationId = Number(membership.organization_id);
 
-    const [sessionsOverTime, activeMembersOverTime, totalMembersRes] = await Promise.all([
+    const [sessionsOverTime, activeMembersOverTime, totalMembersRes, feedbackStatsRes] = await Promise.all([
       organizationQueries.getSessionsOverTime(organizationId, TREND_WINDOW_DAYS),
       organizationQueries.getActiveMembersOverTime(organizationId, TREND_WINDOW_DAYS),
       organizationQueries.countMembers(organizationId),
+      feedbackQueries.getAggregateForOrganization(organizationId),
     ]);
 
     const totalMembers = Number((totalMembersRes as any)?.count || 0);
+
+    // Anonymized: aggregate numbers only, never individual patient names or comments.
+    const feedbackStats = feedbackStatsRes as any;
+    const totalReviews = Number(feedbackStats?.total_reviews || 0);
+    const recommendResponses = Number(feedbackStats?.recommend_responses || 0);
+    const satisfaction = {
+      averageRating: totalReviews > 0 ? Number(Number(feedbackStats.average_rating).toFixed(1)) : null,
+      totalReviews,
+      recommendPercent: recommendResponses > 0
+        ? Math.round((Number(feedbackStats.recommend_count) / recommendResponses) * 100)
+        : null,
+    };
 
     // Merge the two weekly series into one, and derive a utilization % per week.
     const activeByWeek = new Map<string, number>(
@@ -49,6 +62,7 @@ export async function GET(request: Request) {
       data: {
         totalMembers,
         weeklyTrend,
+        satisfaction,
       },
     });
   } catch (error) {

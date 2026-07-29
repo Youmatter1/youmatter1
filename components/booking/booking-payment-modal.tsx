@@ -92,9 +92,9 @@ function CheckoutForm({ amount, therapistName, clientSecret, onSuccess, onClose 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Monthly Subscription</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Session Payment</h3>
                 <p className="text-sm text-gray-500 mt-1">
-                    Pay <span className="font-bold text-gray-900">${(amount / 100).toFixed(2)}</span> to subscribe to {therapistName}.
+                    Pay <span className="font-bold text-gray-900">${(amount / 100).toFixed(2)}</span> for your session with {therapistName}.
                 </p>
             </div>
 

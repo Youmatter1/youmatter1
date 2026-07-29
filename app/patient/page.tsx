@@ -19,6 +19,15 @@ interface Session {
   therapist_email: string;
 }
 
+interface Subscription {
+  plan_name: string;
+  status: string;
+  promo_label: string | null;
+  price: number;
+  currency: string;
+  billing_cycle: string;
+}
+
 function formatDate(dateStr: string) {
   const date = new Date(dateStr + 'T00:00:00');
   const today = new Date();
@@ -43,6 +52,7 @@ export default function PatientDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -70,6 +80,17 @@ export default function PatientDashboard() {
     };
 
     fetchSessions();
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('/api/patient/subscription', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setSubscription(data.data || null))
+      .catch((err) => console.error('Failed to fetch subscription:', err));
   }, [token]);
 
   if (isLoading) {
@@ -281,6 +302,38 @@ export default function PatientDashboard() {
                   </div>
                 )}
               </div>
+
+              {/* Subscription Status */}
+              {subscription && (
+                <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Subscription</h3>
+                    {subscription.promo_label && (
+                      <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full">
+                        {subscription.promo_label}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-600">Plan</p>
+                      <p className="text-sm font-medium text-gray-900 capitalize">
+                        {subscription.plan_name.replace('_', ' ')}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-600">Status</p>
+                      <span className="text-sm font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full capitalize">
+                        {subscription.status}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-4">
+                    You&apos;re enjoying free access during our early access period. Standard pricing of
+                    5,000 RWF/month coming soon.
+                  </p>
+                </div>
+              )}
 
               {/* Journey Stats */}
               <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">

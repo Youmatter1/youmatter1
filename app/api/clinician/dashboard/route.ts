@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getUserFromRequest, hasRole } from '@/lib/auth';
+import { feedbackQueries } from '@/lib/db';
 import db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,7 @@ export async function GET(request: Request) {
       todaysSessionsRes,
       todaySessionsRes,
       upcomingSessionsRes,
+      feedbackStatsRes,
     ] = await Promise.all([
       db.execute({ sql: `SELECT COUNT(*) as count FROM sessions WHERE therapist_id = ?`, args: [therapistId] }),
       db.execute({ sql: `SELECT COUNT(*) as count FROM sessions WHERE therapist_id = ? AND status = 'scheduled'`, args: [therapistId] }),
@@ -99,6 +101,7 @@ export async function GET(request: Request) {
               LIMIT 20`,
         args: [therapistId],
       }),
+      feedbackQueries.getAggregateForTherapist(currentUser.userId),
     ]);
 
     const specializations =
@@ -107,6 +110,10 @@ export async function GET(request: Request) {
         : therapist.specialization
           ? [String(therapist.specialization)]
           : [];
+
+    const feedbackStats = feedbackStatsRes as any;
+    const totalReviews = Number(feedbackStats?.total_reviews || 0);
+    const recommendResponses = Number(feedbackStats?.recommend_responses || 0);
 
     return NextResponse.json({
       success: true,
@@ -128,6 +135,13 @@ export async function GET(request: Request) {
           cancelledSessions: Number((cancelledSessionsRes.rows[0] as any)?.count || 0),
           activePatients: Number((activePatientsRes.rows[0] as any)?.count || 0),
           todaysSessions: Number((todaysSessionsRes.rows[0] as any)?.count || 0),
+        },
+        feedback: {
+          averageRating: totalReviews > 0 ? Number(Number(feedbackStats.average_rating).toFixed(1)) : 0,
+          totalReviews,
+          recommendPercent: recommendResponses > 0
+            ? Math.round((Number(feedbackStats.recommend_count) / recommendResponses) * 100)
+            : null,
         },
         todaySessions: todaySessionsRes.rows,
         upcomingSessions: upcomingSessionsRes.rows,

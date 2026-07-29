@@ -13,9 +13,16 @@ interface WeeklyTrendPoint {
   utilization_rate: number;
 }
 
+interface SatisfactionStats {
+  averageRating: number | null;
+  totalReviews: number;
+  recommendPercent: number | null;
+}
+
 interface AnalyticsData {
   totalMembers: number;
   weeklyTrend: WeeklyTrendPoint[];
+  satisfaction: SatisfactionStats;
 }
 
 function formatWeek(weekStart: string | null): string {
@@ -71,6 +78,28 @@ export default function OrganizationAnalyticsPage() {
         title="Analytics"
         description="Aggregate usage across your organization. Individual member activity and clinical details are never shown here."
       />
+
+      {data.satisfaction.totalReviews > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="rounded-3xl border border-black/20 bg-white p-6 shadow-[0_30px_80px_-60px_rgba(0,0,0,0.2)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/50">Average Rating</p>
+            <p className="mt-2 text-2xl font-semibold text-black">
+              {data.satisfaction.averageRating ?? 'N/A'}
+              <span className="ml-1 text-sm font-normal text-black/50">/ 5</span>
+            </p>
+          </div>
+          <div className="rounded-3xl border border-black/20 bg-white p-6 shadow-[0_30px_80px_-60px_rgba(0,0,0,0.2)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/50">Total Reviews</p>
+            <p className="mt-2 text-2xl font-semibold text-black">{data.satisfaction.totalReviews}</p>
+          </div>
+          <div className="rounded-3xl border border-black/20 bg-white p-6 shadow-[0_30px_80px_-60px_rgba(0,0,0,0.2)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/50">Would Recommend</p>
+            <p className="mt-2 text-2xl font-semibold text-black">
+              {data.satisfaction.recommendPercent !== null ? `${data.satisfaction.recommendPercent}%` : 'N/A'}
+            </p>
+          </div>
+        </div>
+      )}
 
       {!hasData ? (
         <div className="rounded-3xl border border-black/20 bg-white p-16 text-center shadow-[0_30px_80px_-60px_rgba(0,0,0,0.2)]">
