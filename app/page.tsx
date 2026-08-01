@@ -528,15 +528,15 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Emergency</h4>
+              <h4 className="font-semibold text-white mb-4">Contact</h4>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  <span>+1-800-273-8255</span>
+                  <span>+250787543448</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  <span>help@youmatter.com</span>
+                  <span>mberanicole@gmail.com</span>
                 </div>
               </div>
             </div>

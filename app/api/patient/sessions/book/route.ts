@@ -16,6 +16,9 @@ interface BookSessionRequest {
 export async function POST(request: Request) {
   try {
     const user = getUserFromRequest(request);
+    console.log('Book session - user:', user);
+    console.log('Book session - cookies:', request.headers.get('cookie'));
+    
     if (!user || user.role !== 'patient') {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }

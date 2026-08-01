@@ -32,6 +32,7 @@ const columns = [
   {
     title: "Contact",
     links: [
+      { name: "+250787543448", href: "tel:+250787543448" },
       { name: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
     ],
   },

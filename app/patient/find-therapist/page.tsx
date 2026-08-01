@@ -74,12 +74,6 @@ function TherapistCard({ therapist, isOrgBound }: { therapist: Therapist; isOrgB
               <Clock className="w-4 h-4 text-gray-400" />
               <span>{therapist.years_of_experience} years experience</span>
             </div>
-            {!isOrgBound && (
-              <div className="flex items-center gap-2 text-gray-700">
-                <DollarSign className="w-4 h-4 text-gray-400" />
-                <span>${therapist.consultation_fee}/session</span>
-              </div>
-            )}
             <div className="flex items-center gap-2 text-green-600 font-medium">
               <span className="w-2 h-2 rounded-full bg-green-600"></span>
               {therapist.is_verified ? 'Verified & Available' : 'Pending Verification'}
@@ -105,7 +99,6 @@ export default function FindTherapistPage() {
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [selectedTherapyTypes, setSelectedTherapyTypes] = useState<string[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState([0, 200]);
   const [minRating, setMinRating] = useState(0);
   const [organizationName, setOrganizationName] = useState<string | null>(null);
 
@@ -150,10 +143,9 @@ export default function FindTherapistPage() {
       (therapist.specialization && therapist.specialization.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesSpecialties = selectedSpecialties.length === 0 || selectedSpecialties.some((s) => therapist.specialization?.toLowerCase().includes(s.toLowerCase()));
-    const matchesPrice = therapist.consultation_fee >= priceRange[0] && therapist.consultation_fee <= priceRange[1];
     const matchesRating = therapist.average_rating >= minRating;
 
-    return matchesSearch && matchesSpecialties && matchesPrice && matchesRating;
+    return matchesSearch && matchesSpecialties && matchesRating;
   });
 
   if (loading) {
@@ -219,33 +211,6 @@ export default function FindTherapistPage() {
           <div className="w-64 flex-shrink-0">
             <div className="rounded-xl bg-white border border-gray-200 p-6 sticky top-28 space-y-6">
               <h2 className="font-bold text-gray-900">Filters</h2>
-
-              {/* Price Range: not relevant for org-covered sessions */}
-              {!isOrgBound && (
-                <div>
-                  <label className="text-sm font-semibold text-gray-900 block mb-3">
-                    Price Range: ${priceRange[0]} - ${priceRange[1]}
-                  </label>
-                  <div className="space-y-2">
-                    <input
-                      type="range"
-                      min="0"
-                      max="200"
-                      value={priceRange[0]}
-                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                      className="w-full"
-                    />
-                    <input
-                      type="range"
-                      min="0"
-                      max="200"
-                      value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* Minimum Rating */}
               <div>
@@ -344,7 +309,6 @@ export default function FindTherapistPage() {
                   setSelectedSpecialties([]);
                   setSelectedTherapyTypes([]);
                   setSelectedLanguages([]);
-                  setPriceRange([0, 200]);
                   setMinRating(0);
                   setSearchTerm('');
                 }}
@@ -370,7 +334,6 @@ export default function FindTherapistPage() {
                   setSelectedSpecialties([]);
                   setSelectedTherapyTypes([]);
                   setSelectedLanguages([]);
-                  setPriceRange([0, 200]);
                   setMinRating(0);
                   setSearchTerm('');
                 }}

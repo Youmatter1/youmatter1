@@ -105,7 +105,10 @@ export default function BookSessionContent() {
     try {
       const response = await fetch('/api/patient/sessions/book', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         credentials: 'include',
         body: JSON.stringify({
           therapist_id: therapistId,
@@ -371,19 +374,6 @@ export default function BookSessionContent() {
               </p>
             </div>
           </div>
-
-          {!isOrgBound && (
-            <div className="pt-4">
-              <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Total Price</p>
-              {hasSubscription ? (
-                <p className="text-sm font-semibold text-green-600">Covered by your subscription</p>
-              ) : (
-                <p className="text-2xl font-bold text-black">
-                  {formatPrice(therapist.consultation_fee, therapist.session_price)}
-                </p>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
