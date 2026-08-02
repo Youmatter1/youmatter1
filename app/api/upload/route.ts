@@ -65,8 +65,12 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error('Upload error:', error);
+        // Surfacing the underlying message (not just a generic 500) is a
+        // deliberate, temporary diagnostic aid while tracking down a
+        // production-only upload failure. AWS SDK error text here is
+        // operational detail (e.g. bad credentials/endpoint), not a secret.
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: 'Internal server error', details: error instanceof Error ? error.message : String(error) },
             { status: 500 }
         );
     }
